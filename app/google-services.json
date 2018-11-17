@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "502360012198",
+    "firebase_url": "https://pigeonfly-1a7ad.firebaseio.com",
+    "project_id": "pigeonfly-1a7ad",
+    "storage_bucket": "pigeonfly-1a7ad.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:502360012198:android:ffd52a5c22a3659d",
+        "android_client_info": {
+          "package_name": "com.toshi.aerke.pigeonfly"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "502360012198-7oosktrblh4t3vivi54fl20ndlhlkmet.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.toshi.aerke.pigeonfly",
+            "certificate_hash": "8d4e24dd289068691af23590fc4048932e6003d9"
+          }
+        },
+        {
+          "client_id": "502360012198-uehsfi3o34dv9ce8j4sa8aqnmj6qq6to.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCZY1YwGodYAA7pfl_m47mZVwJryqPFIPg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "502360012198-uehsfi3o34dv9ce8j4sa8aqnmj6qq6to.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

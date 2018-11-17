@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/menu_contact"
+    android:title="People"/>
+    <item android:id="@+id/menu_friend"
+        android:title="Friends"/>
+    <item android:id="@+id/menu_chat"
+        android:title="Chat"/>
+    <item android:id="@+id/menu_request"
+        android:title="Request"/>
+    <item android:id="@+id/menu_setting"
+        android:title="Setting"/>
+</menu>
