@@ -22,6 +22,7 @@ public class Home extends AppCompatActivity {
          FirebaseAuth firebaseAuth;
          String userId = null;
         private BottomNavigationView bottomNavigationView;
+    private ActionBar actionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +30,7 @@ public class Home extends AppCompatActivity {
         setContentView(R.layout.activity_home);
         toolbar = (Toolbar)findViewById(R.id.HomeToolbar);
         setSupportActionBar(toolbar);
-        ActionBar actionBar =getSupportActionBar();
+        actionBar =getSupportActionBar();
         firebaseAuth = FirebaseAuth.getInstance();
         if(firebaseAuth.getCurrentUser()!=null){
             userId =firebaseAuth.getCurrentUser().getUid();
@@ -46,18 +47,23 @@ public class Home extends AppCompatActivity {
                  switch (item.getItemId()){
                      case R.id.menu_chat:
                          setFragment(new ChatFragment());
+                         actionBar.setTitle("Chat");
                          return true;
                      case R.id.menu_contact:
                          setFragment(new ContactFragment());
+                         actionBar.setTitle("Contact");
                          return true;
                      case R.id.menu_friend:
                          setFragment(new FriendFragment());
+                         actionBar.setTitle("Friend");
                          return true;
                      case R.id.menu_request:
                          setFragment(new RequestFragment());
+                         actionBar.setTitle("Request");
                          return true;
                      case R.id.menu_setting:
                          setFragment(new SettingFragment());
+                         actionBar.setTitle("Setting");
                          return true;
                  }
                  return false;
@@ -67,7 +73,7 @@ public class Home extends AppCompatActivity {
 
     private void setFragment(Fragment fragment) {
         FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction().add(R.id.FragmentContainer,fragment,null).addToBackStack(null).commit();
+        fragmentManager.beginTransaction().replace(R.id.FragmentContainer,fragment,null).addToBackStack(null).commit();
     }
 
     @Override

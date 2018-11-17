@@ -24,12 +24,8 @@ public class splashScreenActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
-        firebaseAuth = FirebaseAuth.getInstance();
-        if(firebaseAuth.getCurrentUser()!=null){
-            userId =firebaseAuth.getCurrentUser().getUid();
-            if(userId!=null)
-            userState = UserState.getInstance(userId);
-        }
+
+
         CountDownTimer time = new CountDownTimer(3000,1) {
             @Override
             public void onTick(long millisUntilFinished) {
@@ -49,14 +45,16 @@ public class splashScreenActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        firebaseAuth = FirebaseAuth.getInstance();
+        userId =firebaseAuth.getCurrentUser().getUid();
 
-        if(userState!=null){
-
-           userState.setUserState(true);
-            startActivity(new Intent(this,Home.class));
-       }else {
-            startActivity(new Intent(this,CreateAcount.class));
-        }
+             if(!userId.isEmpty()){
+                userState = UserState.getInstance(userId);
+                 userState.setUserState(true);
+                 startActivity(new Intent(this,Home.class));
+             }else {
+                startActivity(new Intent(this,CreateAcount.class));
+              }
     }
 
     @Override
@@ -72,7 +70,6 @@ public class splashScreenActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         if(userState!=null){
-
             userState.setUserState(false);
         }
     }

@@ -24,14 +24,18 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 import com.toshi.aerke.model.User;
@@ -41,10 +45,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class Profile extends AppCompatActivity {
         private Button save;
         private EditText fullName,nickName,Bio;
-        private ImageView imageView;
+        private CircleImageView imageView;
         FirebaseAuth firebaseAuth;
         private  String userID;
         private ProgressDialog progressDialog;
@@ -85,7 +91,7 @@ public class Profile extends AppCompatActivity {
         nickName = (EditText)findViewById(R.id.txtNickName);
         Bio = (EditText)findViewById(R.id.txtBio);
         save = (Button) findViewById(R.id.btnSave);
-        imageView = (ImageView) findViewById(R.id.circleImageView);
+        imageView = (CircleImageView) findViewById(R.id.circleImageView);
         progressDialog = new ProgressDialog(this);
     }
 
@@ -186,6 +192,9 @@ public class Profile extends AppCompatActivity {
         if(TextUtils.isEmpty(fname)){
             fullName.setError("Provide Full Name.");
             return false;
+        }if(bio.trim().length()>30){
+            Bio.setError("Biography shouldn't be more than 20 char ");
+            return false;
         }
 
     return true;
@@ -228,13 +237,14 @@ public class Profile extends AppCompatActivity {
             user.put(userID,new User(fullName.getText().toString(),nickName.getText().toString(),Bio.getText().toString()));
 
         }else{
-            user.put(userID,new User(fullName.getText().toString(),nickName.getText().toString(),downloadUrl.toString(),Bio.getText().toString()));
+            user.put(userID,new User(fullName.getText().toString(),nickName.getText().toString(),Bio.getText().toString()));
         }
        databaseReference.updateChildren(user)
                .addOnCompleteListener(new OnCompleteListener<Void>() {
            @Override
            public void onComplete(@NonNull Task<Void> task) {
               if(task.isSuccessful()){
+                  Toast.makeText(Profile.this,"Profile saved successfully",Toast.LENGTH_LONG).show();
                   startActivity(new Intent(Profile.this,Home.class));
               }else {
                   try {
@@ -246,5 +256,30 @@ public class Profile extends AppCompatActivity {
               }
            }
        });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        databaseReference.child(userID).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+               User user = dataSnapshot.getValue(User.class);
+               if(user!=null){
+                   fullName.setText(user.getFullName());
+                   nickName.setText(user.getNickName());
+                   Bio.setText(user.getBio());
+                   Picasso.get().load(user.getImage()).placeholder(R.drawable.avatar).into(imageView);
+               }else{
+                   Snackbar.make(fullName.getRootView(),"User object is empty",Snackbar.LENGTH_LONG).show();
+               }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 }

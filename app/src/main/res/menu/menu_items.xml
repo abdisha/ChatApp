@@ -1,13 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/menu_contact"
-    android:title="People"/>
-    <item android:id="@+id/menu_friend"
-        android:title="Friends"/>
-    <item android:id="@+id/menu_chat"
-        android:title="Chat"/>
-    <item android:id="@+id/menu_request"
-        android:title="Request"/>
-    <item android:id="@+id/menu_setting"
-        android:title="Setting"/>
+    <item
+        android:id="@+id/menu_contact"
+        android:icon="@drawable/ic_people_black_24dp"
+        android:title="People" />
+    <item
+        android:id="@+id/menu_friend"
+        android:icon="@drawable/ic_person_black_24dp"
+        android:title="Friends" />
+    <item
+        android:id="@+id/menu_chat"
+        android:icon="@drawable/ic_chat_bubble_black_24dp"
+        android:title="Chat" />
+    <item
+        android:id="@+id/menu_request"
+        android:icon="@drawable/ic_person_add_black_24dp"
+        android:title="Request" />
+    <item
+        android:id="@+id/menu_setting"
+        android:icon="@drawable/ic_settings_black_24dp"
+        android:title="Setting" />
 </menu>

@@ -18,22 +18,19 @@
         >
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="141dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_alignParentTop="true"
-            android:layout_centerInParent="true"
+            android:layout_alignStart="@+id/circleImageView"
             android:text="Personal Info"
             android:textColor="@color/cardview_light_background"
             android:textSize="19dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <android.support.v4.widget.CircleImageView
+        <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/circleImageView"
-            android:layout_width="90dp"
-            android:layout_height="90dp"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             android:layout_centerInParent="true"
             android:layout_marginTop="56dp"
             android:src="@drawable/avatar"
