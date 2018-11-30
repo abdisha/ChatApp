@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/colorPrimary"
+    app:subtitleTextColor="@color/cardview_light_background"
+    app:titleTextColor="@color/cardview_light_background">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+        <TextView
+            android:id="@+id/txtToolbarFullName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:layout_alignParentLeft="true"
+            android:text="FullName"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/cardview_light_background"
+            android:textStyle="bold"
+            />
+        <TextView
+            android:id="@+id/txtToolbarLastSeen"
+            android:layout_width="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_height="wrap_content"
+            android:textColor="@color/cardview_light_background"
+            android:text="lastSeen"
+            android:layout_below="@+id/txtToolbarFullName"
+            android:layout_marginLeft="5dp"/>
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:layout_margin="3dp"
+            android:id="@+id/profileImageChat"
+             android:layout_alignParentRight="true"
+            android:src="@drawable/avatar"/>
+    </RelativeLayout>
+
+</RelativeLayout>

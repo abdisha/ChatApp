@@ -30,23 +30,24 @@ import java.util.concurrent.TimeUnit;
 
 public class CreateAcount extends AppCompatActivity {
        private View verifyView,progressbar,sendCodeView;
-       private TextView sentTime,reSend,useEmail;
+       private TextView sentTime,reSend;
        private EditText phone,Code;
        private  CountryCodePicker countryCodePicker;
        private PhoneAuthProvider.OnVerificationStateChangedCallbacks changedCallbacks;
        private  PhoneAuthProvider.ForceResendingToken reSendToken;
-       Button send,verify;
+       Button send,verify,useEmail;
        private String phoneNumber;
        private FirebaseAuth firebaseAuth;
        private String userId;
     private String varificationCode;
-
+    UserState userState;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_acount);
         InitializeController();
         firebaseAuth = FirebaseAuth.getInstance();
+        countryCodePicker.detectSIMCountry(true);
         useEmail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -103,7 +104,7 @@ public class CreateAcount extends AppCompatActivity {
         Code = (EditText)findViewById(R.id.codeVerify);
         send =(Button)findViewById(R.id.sendCode);
         verify=(Button)findViewById(R.id.btnVerify);
-        useEmail =(TextView)findViewById(R.id.txtuserEmail);
+        useEmail =(Button)findViewById(R.id.txtuserEmail);
         countryCodePicker =(CountryCodePicker)findViewById(R.id.countryCodePicker);
         sendCodeView.setVisibility(View.VISIBLE);
         verifyView.setVisibility(View.GONE);
@@ -191,7 +192,13 @@ public class CreateAcount extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        if(firebaseAuth.getCurrentUser()!=null){
+            userId = firebaseAuth.getCurrentUser().getUid();
+            userState = UserState.getInstance(userId);
+            userState.setUserState(true);
+            startActivity(new Intent(this,Home.class));
 
+        }
     }
     private void VerifyOnclick(String VerificationCode,String Code){
         
@@ -227,6 +234,22 @@ public class CreateAcount extends AppCompatActivity {
 
     private void ResendCode(PhoneAuthProvider.ForceResendingToken reSendToken) {
         if(reSendToken!=null){
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if(firebaseAuth.getCurrentUser()!=null){
+            userState.setUserState(false);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(firebaseAuth.getCurrentUser()!=null){
+            userState.setUserState(false);
         }
     }
 }

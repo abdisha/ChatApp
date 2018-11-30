@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Chat">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/ChatToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary">
+
+    </android.support.v7.widget.Toolbar>
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_alignParentBottom="true"
+      >
+
+        <EditText
+            android:id="@+id/edtMessage"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|center"
+            android:layout_marginLeft="5dp"
+            android:layout_weight="0.8"
+            android:hint="Write message..."
+            android:background="@color/cardview_light_background"
+            android:padding="5dp"
+            android:textColor="@color/cardview_dark_background"
+            android:textSize="15sp" />
+
+        <ImageButton
+            android:id="@+id/btnSendMessage"
+            android:layout_width="0dp"
+            android:layout_height="32dp"
+            android:layout_weight="0.1"
+            android:background="@drawable/ic_send_black_24dp" />
+    </LinearLayout>
+
+
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/chatRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ChatToolbar"
+        android:layout_above="@+id/linearLayout"
+        android:background="@drawable/chat_background"
+        />
+
+</RelativeLayout >

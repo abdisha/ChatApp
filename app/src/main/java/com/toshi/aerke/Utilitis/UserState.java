@@ -27,12 +27,14 @@ public class UserState {
     }
     public void setUserState(boolean State){
         Map state = new HashMap();
-        state.put("time",timeFormat.getCalendar().getTime());
-        state.put("date",dateFormat.getCalendar().getTime());
+        String Time = timeFormat.getCalendar().getTime().toString();
+        String Date = dateFormat.getCalendar().getTime().toString();
+        state.put("time",Time);
+        state.put("date",Date);
         if(State){
             state.put("state","Online");
         }else {
-            state.put("state","Online");
+            state.put("state","Offline");
         }
         DbRefence.child("User").child(UserId).child("UserState").setValue(state);
     }

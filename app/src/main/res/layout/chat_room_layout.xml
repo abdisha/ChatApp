@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/avatar"
+            android:layout_margin="2dp"
+            android:layout_alignParentLeft="true"
+            android:id="@+id/chatProfileImage"/>
+        <TextView
+            android:id="@+id/txtReceivedMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="6dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/left_message_bubble"
+            android:text="hello"
+            android:layout_toEndOf="@+id/chatProfileImage"
+            android:textColor="@color/cardview_light_background" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/txtsendMessage"
+            android:background="@drawable/right_message_bubble"
+            android:text="hello"
+            android:layout_margin="4dp"
+            android:layout_alignParentRight="true"
+            android:textColor="@color/cardview_dark_background"
+            android:padding="8dp"/>
+    </RelativeLayout>
+</android.support.constraint.ConstraintLayout>

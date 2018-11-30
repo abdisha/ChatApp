@@ -11,6 +11,7 @@ import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -43,6 +44,7 @@ public class SettingFragment extends Fragment {
     CardView cardView;
     FirebaseAuth firebaseAuth;
     DatabaseReference databaseReference;
+    Button signOut;
     String useId= null;
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -83,11 +85,22 @@ public class SettingFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        firebaseAuth =FirebaseAuth.getInstance();
        View view = inflater.inflate(R.layout.fragment_setting, container, false);
        name = (TextView)view.findViewById(R.id.textName);
        imageView=(CircleImageView)view.findViewById(R.id.profileImage);
        Bio=(TextView)view.findViewById(R.id.textBio);
        cardView=(CardView)view.findViewById(R.id.cardProfile);
+       signOut =(Button)view.findViewById(R.id.btnLogout);
+       signOut.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+               if(firebaseAuth.getCurrentUser()!=null){
+                   firebaseAuth.signOut();
+                   startActivity(new Intent(getActivity(),CreateAcount.class));
+               }
+           }
+       });
        cardView.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View v) {

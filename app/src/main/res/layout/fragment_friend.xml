@@ -4,11 +4,44 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".FriendFragment">
+    <ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+               <RelativeLayout
+                   android:layout_width="match_parent"
+                   android:layout_height="match_parent">
+                   <Button
+                       android:id="@+id/addNew"
+                       android:background="@color/cardview_light_background"
+                       android:textColor="@color/colorPrimaryDark"
+                       android:textStyle="normal"
+                       android:fontFamily="sans-serif"
+                       android:layout_margin="10dp"
+                       android:text="add new friend"
+                       android:layout_width="match_parent"
+                       android:layout_height="40dp" />
+                   <TextView
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:id="@+id/emptyExpression"
+                       android:text="Sorry No Friend.."
+                       android:textSize="20dp"
+                       android:layout_gravity="center"
+                       android:layout_marginBottom="90dp"
+                       android:padding="40dp"
+                       android:visibility="gone"/>
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+                   <android.support.v7.widget.RecyclerView
+                       android:id="@+id/friendRecycler"
+                       android:layout_width="match_parent"
+                       android:layout_height="match_parent"
+                       android:layout_below="@+id/addNew">
+
+                   </android.support.v7.widget.RecyclerView>
+               </RelativeLayout>
+
+    </ScrollView>
+
+
 
 </FrameLayout>

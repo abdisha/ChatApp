@@ -38,7 +38,7 @@ public class splashScreenActivity extends AppCompatActivity {
             }
         };
 
-         time.start();
+        // time.start();
 
     }
 
@@ -46,21 +46,23 @@ public class splashScreenActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         firebaseAuth = FirebaseAuth.getInstance();
-        userId =firebaseAuth.getCurrentUser().getUid();
 
-             if(!userId.isEmpty()){
-                userState = UserState.getInstance(userId);
+             if(firebaseAuth.getCurrentUser()== null){
+
+                 startActivity(new Intent(this,CreateAcount.class));
+
+             }else {
+                 userId =firebaseAuth.getCurrentUser().getUid();
+                 userState = UserState.getInstance(userId);
                  userState.setUserState(true);
                  startActivity(new Intent(this,Home.class));
-             }else {
-                startActivity(new Intent(this,CreateAcount.class));
               }
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        if(userState!=null){
+        if(userId!=null){
 
             userState.setUserState(false);
         }
@@ -69,7 +71,7 @@ public class splashScreenActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(userState!=null){
+        if(userId!=null){
             userState.setUserState(false);
         }
     }

@@ -1,12 +1,34 @@
 package com.toshi.aerke.pigeonfly;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.annotation.NonNull;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.firebase.ui.database.SnapshotParser;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+import com.toshi.aerke.model.Message;
+import com.toshi.aerke.viewholder.ChatListViewHolder;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 
 /**
@@ -26,8 +48,15 @@ public class ChatFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    //Initializing firebase component
+    private FirebaseAuth firebaseAuth;
+    private DatabaseReference databaseReference;
+    //view controller initailize
+    private RecyclerView chatListRecyclerView;
 
-
+        ValueEventListener valueEventListener;
+        List<Message> messages =new ArrayList<>();
+        ChatListViewHolder chatListViewHolder;
 
     public ChatFragment() {
         // Required empty public constructor
@@ -64,23 +93,57 @@ public class ChatFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_chat, container, false);
+        View view =inflater.inflate(R.layout.fragment_chat, container, false);
+          chatListRecyclerView =(RecyclerView)view.findViewById(R.id.chatListRecyclerView);
+          chatListRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+          chatListRecyclerView.setHasFixedSize(true);
+
+          databaseReference = FirebaseDatabase.getInstance().getReference();
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
 
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        firebaseAuth =FirebaseAuth.getInstance();
+        final String userId = firebaseAuth.getCurrentUser().getUid();
+        chatListViewHolder = new ChatListViewHolder(messages,getActivity());
+        valueEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    for(DataSnapshot snapshot:dataSnapshot.getChildren()){
+                        Message message = snapshot.getValue(Message.class);
+                        Log.i("output", "chatList onDataChange: "+message.getMessage());
+                        messages.add(message);
+                        chatListViewHolder.notifyDataSetChanged();
+                    }
+                }
+                //Log.i("output", "outof datasnapshout exit chatlist view: "+ dataSnapshot.child("message").getValue().toString());
 
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+        Log.i("output", "chatlistuserId: "+userId);
+         Query query =FirebaseDatabase.getInstance().getReference("Message").child(userId).limitToFirst(2);
+         query.addListenerForSingleValueEvent(valueEventListener);
+       chatListRecyclerView.setAdapter(chatListViewHolder);
+
+
+
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+    }
 }

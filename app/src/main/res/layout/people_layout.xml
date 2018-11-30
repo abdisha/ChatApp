@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <android.support.v7.widget.CardView
+        android:id="@+id/peopleCardView"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="2dp"
+        >
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/peopleProfileImage"
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:src="@drawable/avatar"
+            android:layout_margin="4dp"
+            app:civ_border_color="@color/cardview_light_background"
+            app:civ_border_width="1dp"
+            android:layout_gravity="center|left"/>
+        <TextView
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/txtPeopleName"
+            android:hint="Name"
+            android:textSize="14dp"
+            android:textColor="@color/cardview_dark_background"
+            android:layout_marginLeft="80dp"
+            android:layout_marginTop="5dp"/>
+        <TextView
+            android:id="@+id/txtPeopleBio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="bio"
+            android:textSize="12dp"
+            android:textColor="@color/cardview_dark_background"
+            android:layout_marginLeft="80dp"
+            android:layout_marginTop="40dp"/>
+
+    </android.support.v7.widget.CardView>
+</RelativeLayout>
+

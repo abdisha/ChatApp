@@ -49,10 +49,8 @@ public class Home extends AppCompatActivity {
                          setFragment(new ChatFragment());
                          actionBar.setTitle("Chat");
                          return true;
-                     case R.id.menu_contact:
-                         setFragment(new ContactFragment());
-                         actionBar.setTitle("Contact");
-                         return true;
+//                     case R.id.menu_contact:
+//                         return true;
                      case R.id.menu_friend:
                          setFragment(new FriendFragment());
                          actionBar.setTitle("Friend");
@@ -79,8 +77,15 @@ public class Home extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-       if(userState !=null)
-           userState.setUserState(true);
+            if(firebaseAuth.getCurrentUser()!=null)
+                userState.setUserState(true);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(firebaseAuth.getCurrentUser()!=null){
+            userState.setUserState(false);
+        }
+    }
 }

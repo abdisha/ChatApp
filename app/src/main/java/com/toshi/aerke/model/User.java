@@ -4,7 +4,7 @@ public class User {
     private  String fullName;
     private String nickName;
     private String image;
-    private String bio;
+    private String bio;;
 
     public User() {
     }
