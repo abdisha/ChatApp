@@ -38,9 +38,12 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
+import com.toshi.aerke.Utilitis.OfflineStorage;
 import com.toshi.aerke.Utilitis.UserState;
 import com.toshi.aerke.model.User;
 
@@ -66,6 +69,7 @@ public class Profile extends AppCompatActivity {
     private byte[] CompressData;
     private Uri downloadUrl = null;
     StorageReference storageReference;
+    private String _fullName,_nickName,_bio,_image;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,7 +106,7 @@ public class Profile extends AppCompatActivity {
         android.support.v7.app.ActionBar actionBar = getSupportActionBar();
         actionBar.setHomeButtonEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
-
+         actionBar.setDisplayShowTitleEnabled(false);
         imageView = (CircleImageView) findViewById(R.id.circleImageView);
         addImage =(ImageButton)findViewById(R.id.btnAddImage);
         progressDialog = new ProgressDialog(this);
@@ -110,6 +114,7 @@ public class Profile extends AppCompatActivity {
 
     private void InitializeFireBaseComponent() {
         databaseReference = FirebaseDatabase.getInstance().getReference().child("User");
+        databaseReference.keepSynced(true);
         storageReference = FirebaseStorage.getInstance().getReference();
         firebaseAuth =FirebaseAuth.getInstance();
         userID = firebaseAuth.getCurrentUser().getUid();
@@ -118,8 +123,7 @@ public class Profile extends AppCompatActivity {
     private void ChooseImage() {
         CropImage.activity()
                 .setGuidelines(CropImageView.Guidelines.ON)
-                .setAspectRatio(1,1)
-                .start(this);
+                .setAspectRatio(1,1).start(this);
 
     }
 
@@ -257,9 +261,10 @@ public class Profile extends AppCompatActivity {
 
     private void SaveUserInfo(){
         Map<String,Object> user = new HashMap();
-           user.put("bio",Bio.getText().toString());
+           user.put("bio",Bio.getText().toString().isEmpty()?"not provide":Bio.getText().toString());
            user.put("fullName",fullName.getText().toString());
            user.put("nickName",nickName.getText().toString());
+           user.put("uid",userID);
 
        databaseReference.child(userID).updateChildren(user)
                .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -290,10 +295,13 @@ public class Profile extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                User user = dataSnapshot.getValue(User.class);
                if(user!=null){
-                   fullName.setText(user.getFullName());
-                   nickName.setText(user.getNickName());
-                   Bio.setText(user.getBio());
-                   Picasso.get().load(user.getImage()).placeholder(R.color.cardview_dark_background).into(imageView);
+                  _fullName =  user.getFullName();
+                   _nickName =user.getNickName();
+                   _bio = user.getBio();
+                   if(dataSnapshot.child("image").exists())
+                   _image = user.getImage();
+                   Log.i("output", "onDataChange: "+_image);
+
                }else{
                    Snackbar.make(fullName.getRootView(),"User object is empty",Snackbar.LENGTH_LONG).show();
                }
@@ -304,5 +312,21 @@ public class Profile extends AppCompatActivity {
 
             }
         });
+
+        fullName.setText(_fullName);
+        nickName.setText(_nickName);
+        Bio.setText(_bio);
+        Picasso.get().load(_image).networkPolicy(NetworkPolicy.OFFLINE).into(imageView
+                ,        new Callback() {
+                    @Override
+                    public void onSuccess() {
+
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        Picasso.get().load(_image).placeholder(R.drawable.avatar).into(imageView);
+                    }
+                });
     }
 }

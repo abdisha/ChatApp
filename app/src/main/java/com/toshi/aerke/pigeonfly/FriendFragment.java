@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -57,7 +58,7 @@ public class FriendFragment extends Fragment {
     //the fragment component initializing
     RecyclerView recyclerView;
      List<String> Users;
-     Button addNewFriend;
+     FloatingActionButton addNewFriend;
      TextView Empty;
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -102,7 +103,7 @@ public class FriendFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("User");
+        databaseReference = FirebaseDatabase.getInstance().getReference();
         firebaseAuth =FirebaseAuth.getInstance();
         UserId = firebaseAuth.getCurrentUser().getUid();
         View view = inflater.inflate(R.layout.fragment_friend, container, false);
@@ -110,11 +111,12 @@ public class FriendFragment extends Fragment {
               recyclerView =(RecyclerView)view.findViewById(R.id.friendRecycler);
               recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
               recyclerView.setHasFixedSize(true);
-              addNewFriend =(Button)view.findViewById(R.id.addNew);
+              addNewFriend =(FloatingActionButton) view.findViewById(R.id.addNew);
               addNewFriend.setOnClickListener(new View.OnClickListener() {
                   @Override
                   public void onClick(View v) {
-                      startActivity(new Intent(getActivity(),People.class));
+                      Intent FriendActivity =new Intent(getActivity(),People.class);
+                      startActivity(FriendActivity);
                   }
               });
         return view;
@@ -124,14 +126,16 @@ public class FriendFragment extends Fragment {
       private void setRecyclerView(){
                     Users = new ArrayList<>();
           viewHolder = new FriendViewHolder(Users,getActivity());
-                databaseReference.child("Friends").child(UserId).child("UserId")
+                databaseReference.child("Friends").child(UserId)
                         .addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                 if(dataSnapshot.exists()){
+                                        for(DataSnapshot dataSnapshot1: dataSnapshot.getChildren()){
+                                            Log.i("output", "Friends Id: "+dataSnapshot1.child("UserId").getValue().toString());
+                                            Users.add(dataSnapshot1.child("UserId").getValue().toString());
+                                        }
 
-                                    Log.i("output", "Friends Id: "+dataSnapshot.getValue().toString());
-                                     Users.add(dataSnapshot.getValue().toString());
                                       viewHolder.notifyDataSetChanged();
                                 }
 

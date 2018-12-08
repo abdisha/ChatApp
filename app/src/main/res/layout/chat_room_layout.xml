@@ -8,13 +8,13 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="2dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
         <de.hdodenhof.circleimageview.CircleImageView
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:src="@drawable/avatar"
             android:layout_margin="2dp"
             android:layout_alignParentLeft="true"
@@ -23,22 +23,34 @@
             android:id="@+id/txtReceivedMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="6dp"
-            android:layout_marginTop="8dp"
+            android:maxWidth="300dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingBottom="3dp"
+            android:paddingTop="3dp"
+            android:layout_marginTop="10dp"
             android:background="@drawable/left_message_bubble"
-            android:text="hello"
+            android:fontFamily="sans-serif-condensed"
+            android:textStyle="normal"
             android:layout_toEndOf="@+id/chatProfileImage"
             android:textColor="@color/cardview_light_background" />
 
         <TextView
             android:layout_width="wrap_content"
+            android:minWidth="2dp"
+            android:maxWidth="300dp"
             android:layout_height="wrap_content"
             android:id="@+id/txtsendMessage"
+            android:elevation="5dp"
             android:background="@drawable/right_message_bubble"
-            android:text="hello"
-            android:layout_margin="4dp"
+            android:layout_margin="3dp"
             android:layout_alignParentRight="true"
-            android:textColor="@color/cardview_dark_background"
-            android:padding="8dp"/>
+            android:textColor="@android:color/background_dark"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingBottom="3dp"
+            android:paddingTop="3dp"
+
+      />
     </RelativeLayout>
 </android.support.constraint.ConstraintLayout>

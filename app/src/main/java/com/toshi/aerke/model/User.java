@@ -4,15 +4,43 @@ public class User {
     private  String fullName;
     private String nickName;
     private String image;
-    private String bio;;
+    private String bio;
+    private String state;
+    private String uid;
+    //private String UserState;
+
+    public String getUid() {
+        return uid;
+    }
+//
+//    public String getUserState() {
+//        return UserState;
+//    }
+
+//  public void setUserState(String userState) {
+//        UserState = userState;
+//    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
 
     public User() {
     }
 
-    public User(String fullName, String nickName, String bio) {
+    public User(String fullName, String nickName, String bio,String Uid) {
         this.fullName = fullName;
         this.nickName = nickName;
         this.bio = bio;
+        this.uid = uid;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
     }
 
     public String getFullName() {
@@ -47,10 +75,11 @@ public class User {
         this.bio = bio;
     }
 
-    public User(String fullName, String nickName, String image, String bio) {
+    public User(String fullName, String nickName, String image, String bio,String uid) {
         this.fullName = fullName;
         this.nickName = nickName;
         this.image = image;
         this.bio = bio;
+        this.uid =uid;
     }
 }

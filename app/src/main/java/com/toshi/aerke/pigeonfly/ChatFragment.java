@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -17,6 +18,7 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.firebase.ui.database.SnapshotParser;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -24,6 +26,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.toshi.aerke.model.Message;
+import com.toshi.aerke.model.User;
 import com.toshi.aerke.viewholder.ChatListViewHolder;
 
 import java.util.ArrayList;
@@ -55,7 +58,7 @@ public class ChatFragment extends Fragment {
     private RecyclerView chatListRecyclerView;
 
         ValueEventListener valueEventListener;
-        List<Message> messages =new ArrayList<>();
+        List<User> FriendsUId =new ArrayList<>();
         ChatListViewHolder chatListViewHolder;
 
     public ChatFragment() {
@@ -110,21 +113,36 @@ public class ChatFragment extends Fragment {
         super.onStart();
         firebaseAuth =FirebaseAuth.getInstance();
         final String userId = firebaseAuth.getCurrentUser().getUid();
-        chatListViewHolder = new ChatListViewHolder(messages,getActivity());
+        chatListViewHolder = new ChatListViewHolder(FriendsUId,getActivity());
+
         valueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()){
-                    for(DataSnapshot snapshot:dataSnapshot.getChildren()){
-                        Message message = snapshot.getValue(Message.class);
-                        Log.i("output", "chatList onDataChange: "+message.getMessage());
-                        messages.add(message);
-                        chatListViewHolder.notifyDataSetChanged();
+                if(dataSnapshot.exists()) {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+
+                        FirebaseDatabase.getInstance().getReference().child("User")
+                                .child(snapshot.child("UserId").getValue().toString())
+                                .addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        if(dataSnapshot.exists()){
+                                            User user = dataSnapshot.getValue(User.class);
+                                            FriendsUId.add(user);
+                                            Log.i("output", "onDataChange ChatList: "+user.getUid());
+                                        }
+                                        chatListViewHolder.notifyDataSetChanged();
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
+
+
                     }
                 }
-                //Log.i("output", "outof datasnapshout exit chatlist view: "+ dataSnapshot.child("message").getValue().toString());
-
-
             }
 
             @Override
@@ -132,8 +150,10 @@ public class ChatFragment extends Fragment {
 
             }
         };
-        Log.i("output", "chatlistuserId: "+userId);
-         Query query =FirebaseDatabase.getInstance().getReference("Message").child(userId).limitToFirst(2);
+
+
+
+         Query query =FirebaseDatabase.getInstance().getReference("Friends").child(userId).orderByChild("UserId");
          query.addListenerForSingleValueEvent(valueEventListener);
        chatListRecyclerView.setAdapter(chatListViewHolder);
 

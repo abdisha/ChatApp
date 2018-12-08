@@ -196,6 +196,7 @@ public class SignUP extends AppCompatActivity implements LoaderCallbacks<Cursor>
         }
         if(!isPasswordConfirmed(password,confirm)){
             mconfirm.setText("Password mismatch !");
+            focusView = mconfirm;
             cancel =true;
         }
 
@@ -324,7 +325,7 @@ public class SignUP extends AppCompatActivity implements LoaderCallbacks<Cursor>
         private final String mEmail;
         private final String mPassword;
         private boolean result =false;
-        private  String message ="";
+        private  String message ="Error ";
         FirebaseAuth firebaseAuth;
 
         UserLoginTask(String email, String password) {
@@ -335,7 +336,6 @@ public class SignUP extends AppCompatActivity implements LoaderCallbacks<Cursor>
         @Override
         protected Boolean doInBackground(Void... params) {
 
-            try {
                      FirebaseAuth.getInstance().createUserWithEmailAndPassword(mEmail,mPassword)
                              .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                                  @Override
@@ -352,13 +352,11 @@ public class SignUP extends AppCompatActivity implements LoaderCallbacks<Cursor>
                          @Override
                          public void onFailure(@NonNull Exception e) {
                              message = e.getMessage();
-                             result =false;
+
                          }
                      });
 
-            } catch (Exception e) {
-                return false;
-            }
+
 
             return result;
         }
@@ -372,7 +370,7 @@ public class SignUP extends AppCompatActivity implements LoaderCallbacks<Cursor>
                 startActivity(new Intent(SignUP.this,Login.class));
                 finish();
             } else {
-               Snackbar.make(mEmailView.getRootView(),message,Snackbar.LENGTH_LONG).show();
+               Snackbar.make(mEmailView,message,Snackbar.LENGTH_LONG).show();
             }
         }
 

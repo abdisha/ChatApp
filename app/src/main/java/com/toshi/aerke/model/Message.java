@@ -2,10 +2,18 @@ package com.toshi.aerke.model;
 
 public class Message {
     private String message;
-    private String to;
     private String seen;
     private String time;
     private String type;
+    private String from;
+
+    public String getFrom() {
+        return from;
+    }
+
+    public void setFrom(String from) {
+        this.from = from;
+    }
 
     public String getMessage() {
         return message;
@@ -18,13 +26,6 @@ public class Message {
         this.message = message;
     }
 
-    public String getTo() {
-        return to;
-    }
-
-    public void setTo(String to) {
-        this.to = to;
-    }
 
     public String getSeen() {
         return seen;
@@ -50,11 +51,11 @@ public class Message {
         this.type = type;
     }
 
-    public Message(String message, String to, String seen, String time, String type) {
+    public Message(String message,String from, String seen, String time, String type) {
         this.message = message;
-        this.to = to;
         this.seen = seen;
         this.time = time;
         this.type = type;
+        this.from = from;
     }
 }

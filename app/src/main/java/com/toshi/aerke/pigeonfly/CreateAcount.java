@@ -9,6 +9,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
@@ -62,7 +63,7 @@ public class CreateAcount extends AppCompatActivity {
 
                    PhoneAuthProvider.getInstance().verifyPhoneNumber(
                        phoneNumber,
-                       60,
+                       30,
                            TimeUnit.SECONDS,
                            CreateAcount.this,
                            changedCallbacks,
@@ -86,7 +87,7 @@ public class CreateAcount extends AppCompatActivity {
         if(TextUtils.isEmpty(phoneNumber)){
             phone.setError("Provide your phone!");
             return false;
-        }if(phoneNumber.length()<9){
+        }if(phoneNumber.length()>6 && phoneNumber.length()<10){
             phone.setError("Invalid phone! ");
             return false;
         }
@@ -127,6 +128,7 @@ public class CreateAcount extends AppCompatActivity {
                   Snackbar.make(phone.getRootView(),e.getMessage(),Snackbar.LENGTH_LONG).show();
                   WaitingTime(false);
                   showProgressBar(false,false);
+                  Log.i("output", "onVerificationFailed: true");
 
 
               }
@@ -179,7 +181,7 @@ public class CreateAcount extends AppCompatActivity {
 
             sendCodeView.setVisibility(View.INVISIBLE);
             progressbar.setVisibility(View.GONE);
-        }else if(!(codeSent) && !(show)){
+        }else {
             useEmail.setVisibility(View.VISIBLE);
             verifyView.setVisibility(View.INVISIBLE);
 
@@ -232,6 +234,12 @@ public class CreateAcount extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
+
     private void ResendCode(PhoneAuthProvider.ForceResendingToken reSendToken) {
         if(reSendToken!=null){
         }
@@ -240,16 +248,12 @@ public class CreateAcount extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        if(firebaseAuth.getCurrentUser()!=null){
-            userState.setUserState(false);
-        }
+
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(firebaseAuth.getCurrentUser()!=null){
-            userState.setUserState(false);
-        }
+
     }
 }

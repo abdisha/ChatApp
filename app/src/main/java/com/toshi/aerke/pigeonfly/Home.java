@@ -14,6 +14,11 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.toshi.aerke.Utilitis.UserState;
 
 public class Home extends AppCompatActivity {
@@ -23,6 +28,7 @@ public class Home extends AppCompatActivity {
          String userId = null;
         private BottomNavigationView bottomNavigationView;
     private ActionBar actionBar;
+    private DatabaseReference databaseReferenceStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +43,14 @@ public class Home extends AppCompatActivity {
             if(userId!=null)
                 userState = UserState.getInstance(userId);
         }
+//        databaseReferenceStatus = FirebaseDatabase.getInstance().getReference(".info/connected");
+//                 databaseReferenceStatus.onDisconnect().cancel(new DatabaseReference.CompletionListener() {
+//                     @Override
+//                     public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+//                         if(firebaseAuth.getCurrentUser()!=null)
+//                             userState.setUserState(false);
+//                     }
+//                 });
         bottomNavigationView = (BottomNavigationView)findViewById(R.id.menuNavigation);
          actionBar.setTitle("Chat");
          bottomNavigationView.setSelectedItemId(R.id.menu_chat);
@@ -75,17 +89,33 @@ public class Home extends AppCompatActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
+
+    @Override
     protected void onStart() {
         super.onStart();
-            if(firebaseAuth.getCurrentUser()!=null)
-                userState.setUserState(true);
+//        databaseReferenceStatus.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                boolean Status =dataSnapshot.getValue(Boolean.class);
+//                if(firebaseAuth.getCurrentUser()!=null&& Status)
+//                    userState.setUserState(true);
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
+
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(firebaseAuth.getCurrentUser()!=null){
-            userState.setUserState(false);
-        }
+
     }
 }

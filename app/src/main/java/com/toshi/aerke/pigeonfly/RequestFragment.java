@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.toshi.aerke.model.User;
 import com.toshi.aerke.viewholder.RequestViewHolder;
 
@@ -45,10 +48,12 @@ public class RequestFragment extends Fragment {
     private FirebaseAuth firebaseAuth;
     private DatabaseReference databaseReference;
     private RequestViewHolder requestViewHolder;
+    ValueEventListener valueEventListener;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
     private ArrayList<String> requestUserId;
+    private String userId;
 
     public RequestFragment() {
         // Required empty public constructor
@@ -85,9 +90,29 @@ public class RequestFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("User");
-
+        databaseReference = FirebaseDatabase.getInstance().getReference();
         firebaseAuth =FirebaseAuth.getInstance();
+         userId = firebaseAuth.getCurrentUser().getUid();
+        requestUserId = new ArrayList<>();
+        requestViewHolder = new RequestViewHolder(requestUserId);
+         valueEventListener = new ValueEventListener() {
+             @Override
+             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                 if(dataSnapshot.exists()){
+                     for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                         requestUserId.add(snapshot.child("senderId").getValue().toString());
+                         Log.i("out put", "onChildAdded received request: "+snapshot.child("senderId").getValue().toString());
+                         requestViewHolder.notifyDataSetChanged();
+                     }
+                 }
+                 requestViewHolder.notifyDataSetChanged();
+             }
+
+             @Override
+             public void onCancelled(@NonNull DatabaseError databaseError) {
+
+             }
+         };
         View view= inflater.inflate(R.layout.fragment_request, container, false);
           recyclerView = (RecyclerView)view.findViewById(R.id.requestRecycler);
           recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -99,40 +124,13 @@ public class RequestFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        String userId = firebaseAuth.getCurrentUser().getUid();
-        requestUserId = new ArrayList<>();
-        requestViewHolder = new RequestViewHolder(requestUserId);
-          databaseReference.child("Request").child(userId).child("ReceivedRequest")
-                  .addChildEventListener(new ChildEventListener() {
-                      @Override
-                      public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                           if(dataSnapshot.exists()){
-                               requestUserId.add(dataSnapshot.child("SenderID").getValue().toString());
-                           }
-                           requestViewHolder.notifyDataSetChanged();
 
-                      }
 
-                      @Override
-                      public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+        Query query = FirebaseDatabase.getInstance().getReference("Request").child(userId)
+                .child("ReceivedRequest");
+        query.addListenerForSingleValueEvent(valueEventListener);
 
-                      }
 
-                      @Override
-                      public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-                      }
-
-                      @Override
-                      public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                      }
-
-                      @Override
-                      public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                      }
-                  });
           recyclerView.setAdapter(requestViewHolder);
 
     }

@@ -131,7 +131,7 @@ public class Login extends AppCompatActivity implements LoaderCallbacks<Cursor> 
             return true;
         }
         if (shouldShowRequestPermissionRationale(READ_CONTACTS)) {
-            Snackbar.make(mEmailView, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
+            Snackbar.make(mEmailView.getRootView(), R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
                     .setAction(android.R.string.ok, new View.OnClickListener() {
                         @Override
                         @TargetApi(Build.VERSION_CODES.M)
@@ -320,7 +320,7 @@ public class Login extends AppCompatActivity implements LoaderCallbacks<Cursor> 
         private final String mEmail;
         private final String mPassword;
         private boolean result =false;
-        private String Message = "";
+        private String Message ="Error";
         UserLoginTask(String email, String password) {
             mEmail = email;
             mPassword = password;
@@ -329,7 +329,6 @@ public class Login extends AppCompatActivity implements LoaderCallbacks<Cursor> 
         @Override
         protected Boolean doInBackground(Void... params) {
 
-            try {
 
                 FirebaseAuth.getInstance().signInWithEmailAndPassword(mEmail, mPassword)
                         .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -338,22 +337,20 @@ public class Login extends AppCompatActivity implements LoaderCallbacks<Cursor> 
                                 if (task.isSuccessful()) {
                                     result =true;
                                 }else{
-                                    result =false;
-                                    Message = task.getException().getMessage();
+
+
                                     try {
                                         throw  task.getException();
 
                                     } catch (Exception e) {
                                         e.printStackTrace();
-
+                                        Message = e.getMessage();
+                                        result =false;
                                     }
                                 }
                             }
                         });
-                } catch
-                        (Exception e) {
 
-                }
 
             return result;
         }
@@ -367,7 +364,7 @@ public class Login extends AppCompatActivity implements LoaderCallbacks<Cursor> 
 
             } else {
 
-                Snackbar.make(mEmailView.getRootView(),Message, Snackbar.LENGTH_LONG).show();
+                Snackbar.make(mEmailView,Message, Snackbar.LENGTH_LONG).show();
             }
         }
 

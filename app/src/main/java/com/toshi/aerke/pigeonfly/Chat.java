@@ -30,6 +30,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 import com.toshi.aerke.model.Message;
@@ -98,9 +99,11 @@ public class Chat extends AppCompatActivity {
           sendButton.setOnClickListener(new View.OnClickListener() {
               @Override
               public void onClick(View v) {
-                  if(!message.getText().toString().isEmpty())
+                  if(!message.getText().toString().isEmpty()&&message.getText().length()>0){
                       sendMessage();
-                  Toast.makeText(getApplicationContext(),"message sent",Toast.LENGTH_LONG).show();
+                      Toast.makeText(getApplicationContext(),"message sent",Toast.LENGTH_LONG).show();
+                  }
+
               }
 
           });
@@ -125,12 +128,14 @@ public class Chat extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         chatHolder = new ChatHolder(messages, userId);
-         databaseReference.child("Message").child(CurrentUserId)
-                 .addChildEventListener(new ChildEventListener() {
+
+         DatabaseReference chatReference = databaseReference.child("Message").child(CurrentUserId).child(userId);
+         chatReference.keepSynced(true);
+                 chatReference.addChildEventListener(new ChildEventListener() {
                      @Override
                      public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                          Message message = dataSnapshot.getValue(Message.class);
-
+                                    dataSnapshot.child("message").getValue().toString();
                          messages.add(message);
                          chatHolder.notifyDataSetChanged();
 
@@ -157,22 +162,22 @@ public class Chat extends AppCompatActivity {
                      }
                  });
          recyclerView.setAdapter(chatHolder);
-         recyclerView.scrollToPosition(chatHolder.getItemCount());
+         recyclerView.scrollToPosition(chatHolder.getItemCount()+1);
     }
     private void sendMessage(){
         Map<String,String> messegaMap = new HashMap<>();
-        String SenderRer = "Message/"+CurrentUserId;
-        String ReciverRer ="Message/"+userId;
-        String messegRef = databaseReference.child("Message").child(CurrentUserId).push().getKey();
-        messegaMap.put("to",userId);
+        String SenderRer = CurrentUserId;
+        String ReciverRer =userId;
+        String messegRef = databaseReference.child("Message").child(CurrentUserId).child(userId).push().getKey();
+        messegaMap.put("from",CurrentUserId);
         messegaMap.put("message",message.getText().toString());
         messegaMap.put("seen","false");
         messegaMap.put("type","Text");
         messegaMap.put("time", Calendar.getInstance().getTime().toString());
         Map messeRefer = new HashMap();
-        messeRefer.put(SenderRer+"/"+messegRef,messegaMap);
-        messeRefer.put(ReciverRer+"/"+messegRef,messegaMap);
-        databaseReference.updateChildren(messeRefer).addOnCompleteListener(new OnCompleteListener() {
+        messeRefer.put(SenderRer+"/"+ReciverRer+"/"+messegRef,messegaMap);
+        messeRefer.put(ReciverRer+"/"+SenderRer+"/"+messegRef,messegaMap);
+        databaseReference.child("Message").updateChildren(messeRefer).addOnCompleteListener(new OnCompleteListener() {
             @Override
             public void onComplete(@NonNull Task task) {
                 if(task.isSuccessful()){

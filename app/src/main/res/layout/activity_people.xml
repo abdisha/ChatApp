@@ -7,17 +7,51 @@
     tools:context=".People"
     tools:layout_editor_absoluteY="25dp">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
-        app:layout_constraintBottom_toTopOf="@+id/Loading"
-        app:layout_constraintEnd_toStartOf="@+id/Loading"
-        app:layout_constraintStart_toStartOf="@+id/Loading"
-        app:layout_constraintTop_toTopOf="parent"
-        app:title="People"
-        app:titleTextColor="@color/cardview_light_background"></android.support.v7.widget.Toolbar>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimary"
+                app:layout_constraintBottom_toTopOf="@+id/Loading"
+                app:layout_constraintEnd_toStartOf="@+id/Loading"
+                app:layout_constraintStart_toStartOf="@+id/Loading"
+                app:layout_constraintTop_toTopOf="parent"
+                app:theme="@style/ThemeOverlay.AppCompat.Light"
+                app:title="People"
+                app:titleTextColor="@color/cardview_light_background">
+
+            </android.support.v7.widget.Toolbar>
+
+            <com.miguelcatalan.materialsearchview.MaterialSearchView
+                android:id="@+id/search_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </FrameLayout>
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/peopleRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout">
+
+    </android.support.v7.widget.RecyclerView>
 
     <ProgressBar
         android:id="@+id/Loading"
@@ -25,23 +59,10 @@
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_gravity="center"
-        android:layout_marginBottom="57dp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/peopleRecyclerView"
+        android:layout_marginTop="188dp"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/peopleRecyclerView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginBottom="3dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/Loading">
-
-    </android.support.v7.widget.RecyclerView>
+        app:layout_constraintTop_toTopOf="@+id/peopleRecyclerView" />
 
 </android.support.constraint.ConstraintLayout>

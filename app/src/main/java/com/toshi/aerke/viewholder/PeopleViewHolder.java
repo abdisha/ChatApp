@@ -7,6 +7,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 import com.toshi.aerke.pigeonfly.R;
 
@@ -28,8 +30,24 @@ public class PeopleViewHolder extends RecyclerView.ViewHolder {
 
     }
     public void setImage(String Image){
-        if(Image!=null)
-            Picasso.get().load(Image).placeholder(R.drawable.avatar).into(imageView);
+        final String image =Image;
+        if(Image!=null){
+            Picasso.get().load(Image).networkPolicy(NetworkPolicy.OFFLINE)
+                    .into(imageView, new Callback() {
+                        @Override
+                        public void onSuccess() {
+
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+                            Picasso.get().load(image).placeholder(R.drawable.avatar).into(imageView);
+
+                        }
+                    });
+        }
+
+
     }
     public void setNameandBio(String Name,String Bio){
         if(!Name.isEmpty())

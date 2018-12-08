@@ -17,6 +17,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 import com.toshi.aerke.model.Request;
 import com.toshi.aerke.model.User;
@@ -43,7 +45,7 @@ public class RequestViewHolder extends RecyclerView.Adapter<RequestViewHolder.Re
     public RequestView onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
          View view = LayoutInflater.from(parent.getContext())
                  .inflate(R.layout.request_received_layout,null);
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("User");
+        databaseReference = FirebaseDatabase.getInstance().getReference();
          firebaseAuth =FirebaseAuth.getInstance();
         return new RequestView(view);
     }
@@ -52,7 +54,9 @@ public class RequestViewHolder extends RecyclerView.Adapter<RequestViewHolder.Re
     public void onBindViewHolder(@NonNull final RequestView holder, final int position) {
                        String userId = UserId.get(position);
                        if(!userId.equals(null)){
-                           databaseReference.addValueEventListener(new ValueEventListener() {
+                           DatabaseReference databaseReference1 =databaseReference.child("User").child(userId);
+                           databaseReference1.keepSynced(true);
+                                   databaseReference1.addValueEventListener(new ValueEventListener() {
                                @Override
                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                    if(dataSnapshot.exists()){
@@ -76,10 +80,10 @@ public class RequestViewHolder extends RecyclerView.Adapter<RequestViewHolder.Re
                            public void onClick(View v) {
                                final String senderUserId = UserId.get(position);
                                if (!(_userId.equals(null)) && !(senderUserId.equals(null))) {
-                                   String key = databaseReference.child("Friends").child(_userId+"/"+"UserId").push().getKey();
+                                   String key = FirebaseDatabase.getInstance().getReference().child("Friends").child(_userId+"/"+"UserId").push().getKey();
                                    Map friend = new HashMap();
-                                   friend.put(_userId + " / " +key+ " / "+"UserId", senderUserId);
-                                   friend.put(senderUserId + " / "+key + " / "+"UserId", _userId);
+                                   friend.put(_userId + "/" +key+ "/"+"UserId", senderUserId);
+                                   friend.put(senderUserId + "/"+key + "/"+"UserId", _userId);
 //                                   final Map removeRequest = new HashMap();
 //
 //                                   removeRequest.put(_userId + "/" + "ReceivedRequest" + "/" + "senderId", null);
@@ -89,13 +93,16 @@ public class RequestViewHolder extends RecyclerView.Adapter<RequestViewHolder.Re
                                                @Override
                                                public void onComplete(@NonNull Task task) {
                                                    if (task.isSuccessful()) {
-                                                       DatabaseReference d1 = databaseReference.child("Request").child(_userId).child("ReceivedRequest/senderId").equalTo(senderUserId).getRef();
+                                                       DatabaseReference d1 = FirebaseDatabase.getInstance().getReference("Request")
+                                                               .child(_userId).child("ReceivedRequest").orderByChild("senderId").equalTo(senderUserId).getRef();
                                                        d1.removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
                                                            @Override
                                                            public void onComplete(@NonNull Task<Void> task) {
                                                                if(task.isSuccessful()){
-                                                                   DatabaseReference d2 = databaseReference.child("Request").child(_userId).child("SentRequest/receiverId").equalTo(senderUserId).getRef();
+                                                                   DatabaseReference d2 = FirebaseDatabase.getInstance().getReference("Request")
+                                                                           .child(senderUserId).child("SentRequest").orderByChild("receiverId").equalTo(_userId).getRef();
                                                                    d2.removeValue().isSuccessful();
+                                                                   notifyDataSetChanged();
                                                                }
                                                            }
                                                        });
@@ -112,16 +119,17 @@ public class RequestViewHolder extends RecyclerView.Adapter<RequestViewHolder.Re
                            public void onClick(View v) {
                                final String senderUserId = UserId.get(position);
                                if (!(_userId.equals(null)) && !(senderUserId.equals(null))) {
-                                   DatabaseReference d1 =databaseReference.child("Request").child(_userId).child("SentRequest/receiverId").equalTo(senderUserId).getRef();
+                                   DatabaseReference d1 =FirebaseDatabase.getInstance().getReference("Request").child(_userId).child("ReceivedRequest").orderByChild("senderId").equalTo(senderUserId).getRef();
                                    d1.removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
                                        @Override
                                        public void onComplete(@NonNull Task<Void> task) {
                                            if(task.isSuccessful()){
-                                               DatabaseReference d2=databaseReference.child("Request").child(senderUserId).child("ReceivedRequest/senderId").equalTo(_userId).getRef();
+                                               DatabaseReference d2=FirebaseDatabase.getInstance().getReference("Request").child(senderUserId)
+                                                       .child("SentRequest").orderByChild("receiverId").equalTo(_userId).getRef();
                                                d2.removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
                                                    @Override
                                                    public void onComplete(@NonNull Task<Void> task) {
-
+                                                      notifyDataSetChanged();
                                                        Snackbar.make(holder.itemView.getRootView(),"Request canceled", Snackbar.LENGTH_LONG).show();
                                                    }
                                                });
@@ -138,7 +146,7 @@ public class RequestViewHolder extends RecyclerView.Adapter<RequestViewHolder.Re
 
     @Override
     public int getItemCount() {
-        return 0;
+        return UserId.size();
     }
 
     class RequestView extends RecyclerView.ViewHolder {
@@ -156,8 +164,22 @@ public class RequestViewHolder extends RecyclerView.Adapter<RequestViewHolder.Re
         }
 
         public void setCircleImageView(String image) {
-            if(!circleImageView.equals(null))
-                Picasso.get().load(image).placeholder(R.drawable.avatar).into(circleImageView);
+            final String Image= image;
+            if(!circleImageView.equals(null)){
+                Picasso.get().load(Image).networkPolicy(NetworkPolicy.OFFLINE)
+                        .into(circleImageView, new Callback() {
+                            @Override
+                            public void onSuccess() {
+
+                            }
+
+                            @Override
+                            public void onError(Exception e) {
+                                Picasso.get().load(Image).placeholder(R.drawable.avatar).into(circleImageView);
+
+                            }
+                        });
+            }
         }
 
         public void setDate(String date) {

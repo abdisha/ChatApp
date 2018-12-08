@@ -16,6 +16,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 import com.toshi.aerke.pigeonfly.Chat;
 import com.toshi.aerke.pigeonfly.R;
@@ -108,8 +110,22 @@ public class FriendViewHolder extends RecyclerView.Adapter<FriendViewHolder.View
         }
 
         public void setContent(String Image,String Status,String Name,String LastSeen){
-            if(!Image.equals(null))
-                Picasso.get().load(Image).into(circleImageView);
+            if(!Image.equals(null)){
+                final String image = Image;
+                Picasso.get().load(Image).networkPolicy(NetworkPolicy.OFFLINE)
+                        .into(circleImageView, new Callback() {
+                            @Override
+                            public void onSuccess() {
+
+                            }
+
+                            @Override
+                            public void onError(Exception e) {
+                                Picasso.get().load(image).into(circleImageView);
+
+                            }
+                        });
+            }
             if(!status.equals(null))
                 status.setText(Status);
             if(!LastSeen.equals(null))

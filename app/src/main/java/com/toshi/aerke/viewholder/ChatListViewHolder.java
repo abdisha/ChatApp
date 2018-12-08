@@ -3,6 +3,7 @@ package com.toshi.aerke.viewholder;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,26 +18,37 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 import com.toshi.aerke.model.Message;
+import com.toshi.aerke.model.User;
 import com.toshi.aerke.pigeonfly.Chat;
 import com.toshi.aerke.pigeonfly.R;
 
+import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
 public class ChatListViewHolder extends RecyclerView.Adapter<ChatListViewHolder.ChatListView>{
-       List<Message> messages ;
-    private String image,fullName,lastSeen;
+
+       List <User> userList;
+    private String fullName,lastSeen;
+    private String image ="";
     private FirebaseAuth firebaseAuth;
+    private Query userFetching = null,FreindMessage = null;
     private DatabaseReference databaseReferenceUser;
     private DatabaseReference databaseReference;
     Context context;
-    public ChatListViewHolder(List<Message> messages,Context context) {
-        this.messages = messages;
+    private User users;
+
+    public ChatListViewHolder(List<User> Userlist,Context context) {
+        this.userList = Userlist;
         this.context = context;
+
     }
 
     @NonNull
@@ -51,25 +63,32 @@ public class ChatListViewHolder extends RecyclerView.Adapter<ChatListViewHolder.
 
     @Override
     public void onBindViewHolder(@NonNull final ChatListView holder, final int position) {
-        final String userId = firebaseAuth.getCurrentUser().getUid();
-        final Message model = messages.get(position);
-        Log.i("ouput", "chatlistViewHolder: messageslist this "+messages.size());
-        if(messages.size()>0){
-            if(userId !=model.getTo()){
-                databaseReferenceUser = databaseReference.child("User").child(model.getTo()).getRef();
+        String userId = firebaseAuth.getCurrentUser().getUid();
+        User Friend = userList.get(position);
 
-                databaseReferenceUser.addValueEventListener(new ValueEventListener() {
+        if(Friend.getUid()!=null){
+            Log.i("output", "chatlistViewHolder: UserID  "+Friend.getUid());
+              FreindMessage= databaseReference.child("Message").child(userId).child(Friend.getUid()).limitToFirst(1);
+               // Log.i("output", "onBindViewHolder: "+FreindMessage+" /"+Friend.getUid());
+                 FreindMessage.keepSynced(true);
+
+            if( FreindMessage!=null){
+
+                image= Friend.getImage();
+                fullName =Friend.getFullName();
+                lastSeen =Friend.getState();
+                holder.setCircleImageView(image);
+                holder.setFullname(fullName);
+                holder.setDate("offline");
+                FreindMessage.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         if(dataSnapshot.exists()){
-                            image = dataSnapshot.child("image").getValue().toString();
-                            fullName =dataSnapshot.child("fullName").getValue().toString();
-                            lastSeen =dataSnapshot.child("UserState/state").getValue().toString();
+                            for(DataSnapshot snapshot: dataSnapshot.getChildren()){
+                                holder.setMessage(snapshot.child("message").getValue().toString());
+                                holder.setDate(snapshot.child("time").getValue().toString());
+                            }
 
-                            holder.setCircleImageView(image);
-                            holder.setFullname(fullName);
-                            holder.setDate(model.getTime());
-                            holder.setMessage(model.getMessage());
                         }
                     }
 
@@ -78,17 +97,19 @@ public class ChatListViewHolder extends RecyclerView.Adapter<ChatListViewHolder.
 
                     }
                 });
+
             }
 
         }
-               holder.itemView.setOnClickListener(new View.OnClickListener() {
+               holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 Intent chat = new Intent(context.getApplicationContext(),Chat.class);
-                chat.putExtra("userId",messages.get(position).getTo());
-                chat.putExtra("fullName",fullName);
-                chat.putExtra("lastSeen",lastSeen);
-                chat.putExtra("image",image);
+                chat.putExtra("userId",userList.get(position).getUid());
+                chat.putExtra("fullName",userList.get(position).getFullName());
+                chat.putExtra("lastSeen","Offline");
+                chat.putExtra("image",userList.get(position).getImage());
                 context.startActivity(chat);
             }
         });
@@ -96,24 +117,41 @@ public class ChatListViewHolder extends RecyclerView.Adapter<ChatListViewHolder.
 
     @Override
     public int getItemCount() {
-        return messages.size();
+        return userList.size();
     }
 
     class ChatListView extends RecyclerView.ViewHolder {
         CircleImageView circleImageView;
         TextView fullname, message ,date;
+        CardView cardView;
         View view;
         public ChatListView(View itemView) {
             super(itemView);
+            cardView =(CardView)itemView.findViewById(R.id.cardViewChat);
             circleImageView =(CircleImageView)itemView.findViewById(R.id.profileImageChatList);
             message = (TextView)itemView.findViewById(R.id.txtMessageChat);
             date = (TextView)itemView.findViewById(R.id.txtStatusChat);
+            fullname = (TextView)itemView.findViewById(R.id.txtFullNameChat);
 
         }
 
         public void setCircleImageView(String image) {
-            if(!circleImageView.equals(null))
-                Picasso.get().load(image).placeholder(R.drawable.avatar).into(circleImageView);
+            final String Image =image;
+            if(!circleImageView.equals(null)){
+                Picasso.get().load(image).networkPolicy(NetworkPolicy.OFFLINE)
+                        .into(circleImageView, new Callback() {
+                            @Override
+                            public void onSuccess() {
+
+                            }
+
+                            @Override
+                            public void onError(Exception e) {
+                                Picasso.get().load(Image).placeholder(R.drawable.avatar).into(circleImageView);
+
+                            }
+                        });
+            }
         }
 
         public void setDate(String date) {

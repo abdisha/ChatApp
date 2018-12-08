@@ -3,9 +3,11 @@ package com.toshi.aerke.Utilitis;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,7 +20,7 @@ public class UserState {
 
         this.UserId = userId;
         DbRefence = FirebaseDatabase.getInstance().getReference();
-        timeFormat = new SimpleDateFormat("HH:mm a");
+        timeFormat = new SimpleDateFormat("hh:mm a");
         dateFormat = new SimpleDateFormat("dd-MM-yyyy");
     }
     public static UserState getInstance(String UserId){
@@ -26,10 +28,11 @@ public class UserState {
 
     }
     public void setUserState(boolean State){
+        Date date = new Date();
         Map state = new HashMap();
-        String Time = timeFormat.getCalendar().getTime().toString();
-        String Date = dateFormat.getCalendar().getTime().toString();
-        state.put("time",Time);
+        String Time = timeFormat.format(date);
+        String Date = dateFormat.format(date);
+        state.put("time", Time);
         state.put("date",Date);
         if(State){
             state.put("state","Online");
