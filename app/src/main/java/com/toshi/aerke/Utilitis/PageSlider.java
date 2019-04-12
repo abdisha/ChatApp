@@ -16,8 +16,8 @@ public class PageSlider extends PagerAdapter {
     TextView title;
     CircleImageView circleImageView;
     Context context;
-    String [] concept = {"Lovely","Fast and Quick","Reliable","Photo"};
-    int [] drawable ={R.drawable.slider3,R.drawable.image_dove,R.drawable.slider,R.drawable.ic_add_a_photo_black_24dp};
+    String [] concept = {"Welcome Home!","Fast and Quick","Reliable","Photo"};
+    int [] drawable ={R.drawable.thinking,R.drawable.business,R.drawable.addiction,R.drawable.speech};
     @Override
     public int getCount() {
         return drawable.length;

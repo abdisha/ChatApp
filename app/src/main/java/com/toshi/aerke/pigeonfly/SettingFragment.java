@@ -21,6 +21,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
+import com.toshi.aerke.Utilitis.StatusUpdate;
 import com.toshi.aerke.model.User;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -96,6 +97,7 @@ public class SettingFragment extends Fragment {
            @Override
            public void onClick(View v) {
                if(firebaseAuth.getCurrentUser()!=null){
+                   StatusUpdate.getInstance(firebaseAuth.getCurrentUser().getUid()).ChangeStatus(false);
                    firebaseAuth.signOut();
                    startActivity(new Intent(getActivity(),CreateAcount.class));
                }

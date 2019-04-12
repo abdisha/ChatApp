@@ -27,6 +27,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.toshi.aerke.model.Message;
 import com.toshi.aerke.model.User;
+import com.toshi.aerke.model.UserState;
 import com.toshi.aerke.viewholder.ChatListViewHolder;
 
 import java.util.ArrayList;
@@ -114,7 +115,7 @@ public class ChatFragment extends Fragment {
         firebaseAuth =FirebaseAuth.getInstance();
         final String userId = firebaseAuth.getCurrentUser().getUid();
         chatListViewHolder = new ChatListViewHolder(FriendsUId,getActivity());
-
+       FriendsUId.clear();
         valueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -128,8 +129,13 @@ public class ChatFragment extends Fragment {
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                         if(dataSnapshot.exists()){
                                             User user = dataSnapshot.getValue(User.class);
+                                             if ( dataSnapshot.child("UserState").hasChildren()){
+                                                 user.setUserState(dataSnapshot.getValue(UserState.class));
+                                                 Log.i("output", "onDataChange ChatList: "+dataSnapshot.getValue(UserState.class));
+
+                                             }
+
                                             FriendsUId.add(user);
-                                            Log.i("output", "onDataChange ChatList: "+user.getUid());
                                         }
                                         chatListViewHolder.notifyDataSetChanged();
                                     }

@@ -40,7 +40,8 @@ public class PeopleAdapter extends RecyclerView.Adapter<PeopleViewHolder> {
         final User model =list.get(position);
         if(model.getFullName()!=null){
             Log.i("output", "onBindViewHolder: Search "+model.getFullName());
-            holder.setImage(model.getImage());
+             holder.setImage(model.getImage());
+
             holder.setNameandBio(model.getFullName(),model.getBio());
 
 

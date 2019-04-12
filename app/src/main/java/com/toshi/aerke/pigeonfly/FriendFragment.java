@@ -124,13 +124,15 @@ public class FriendFragment extends Fragment {
 
     // TODO: Rename method, update argument and hook method into UI event
       private void setRecyclerView(){
+
                     Users = new ArrayList<>();
+                    Users.clear();
           viewHolder = new FriendViewHolder(Users,getActivity());
                 databaseReference.child("Friends").child(UserId)
                         .addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                if(dataSnapshot.exists()){
+                                if(dataSnapshot.exists()&& dataSnapshot.hasChildren()){
                                         for(DataSnapshot dataSnapshot1: dataSnapshot.getChildren()){
                                             Log.i("output", "Friends Id: "+dataSnapshot1.child("UserId").getValue().toString());
                                             Users.add(dataSnapshot1.child("UserId").getValue().toString());
@@ -146,12 +148,6 @@ public class FriendFragment extends Fragment {
 
                             }
                         });
-                if(Users==null){
-                       Empty.setVisibility(View.VISIBLE);
-                }else {
-                    Empty.setVisibility(View.GONE);
-                    recyclerView.setAdapter(viewHolder);
-                }
 
 
 
@@ -166,6 +162,12 @@ public class FriendFragment extends Fragment {
     public void onStart() {
         super.onStart();
         setRecyclerView();
+        if(Users.size() <= 0){
+            Empty.setVisibility(View.VISIBLE);
+        }else {
+            Empty.setVisibility(View.GONE);
+            recyclerView.setAdapter(viewHolder);
+        }
 
     }
 }

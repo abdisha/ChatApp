@@ -6,10 +6,12 @@ import android.graphics.Color;
 import android.icu.util.TimeUnit;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Html;
+import android.util.Log;
 import android.util.TimeUtils;
 import android.view.View;
 import android.widget.Button;
@@ -17,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.toshi.aerke.Utilitis.PageSlider;
 import com.toshi.aerke.Utilitis.UserState;
@@ -32,9 +35,10 @@ public class splashScreenActivity extends AppCompatActivity {
         private String userId = null;
         UserState userState;
         private PageSlider slider;
+        private  Handler handler;
         ViewPager viewPager;
         LinearLayout linearLayout;
-    int counter = 0;
+        private  int currentItem = 0;
         ViewPager.OnPageChangeListener onPageChangeListener;
           Button btnstart;
     @Override
@@ -46,6 +50,7 @@ public class splashScreenActivity extends AppCompatActivity {
         viewPager =(ViewPager) findViewById(R.id.viewPager);
         btnstart =(Button)findViewById(R.id.Start);
          firebaseAuth = FirebaseAuth.getInstance();
+         handler = new Handler();
          onPageChangeListener = new ViewPager.OnPageChangeListener() {
              @Override
              public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -54,7 +59,8 @@ public class splashScreenActivity extends AppCompatActivity {
 
              @Override
              public void onPageSelected(int position) {
-                postionIndector(position);
+                 currentItem = position;
+                postionIndector(currentItem);
              }
 
              @Override
@@ -62,44 +68,44 @@ public class splashScreenActivity extends AppCompatActivity {
 
              }
          };
+         final Timer timer = new Timer();
 
-         CountDownTimer count = new CountDownTimer(7000,1) {
-             @Override
-             public void onTick(long millisUntilFinished) {
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (currentItem <=4){
+                            Log.i("currentCounter", "AutoSlider: " + currentItem);
+                            viewPager.setCurrentItem(currentItem);
+                            currentItem=currentItem+1;
+                        }
+                    }
+                });
 
-                 new Handler().post(new Runnable() {
-                     @Override
-                     public void run() {
-                         if(viewPager.getCurrentItem()<4){
-                             counter=counter++;
-                             viewPager.setCurrentItem(counter);
-                         }if(viewPager.getCurrentItem()==3){
-                             counter=0;
-                         }
-                     }
-                 });
-             }
 
-             @Override
-             public void onFinish() {
+            }
+        };
 
-             }
-         };
+        timer.schedule(timerTask,2000,4000);
+        if (currentItem == 4)
+            timer.cancel();
 
-         if(firebaseAuth.getCurrentUser()!=null){
+
              slider =new PageSlider(this);
 
              postionIndector(0);
              viewPager.setAdapter(slider);
-             count.start();
              viewPager.addOnPageChangeListener(onPageChangeListener);
-         }else {
-             startActivity(new Intent(splashScreenActivity.this,Home.class));
-         }
+
+            // count.start();
+
 
           btnstart.setOnClickListener(new View.OnClickListener() {
               @Override
               public void onClick(View v) {
+                  timer.cancel();
                   startActivity(new Intent(splashScreenActivity.this,CreateAcount.class));
               }
           });
@@ -121,6 +127,8 @@ public class splashScreenActivity extends AppCompatActivity {
       }
 
   }
+
+
 
 
 }

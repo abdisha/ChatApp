@@ -2,55 +2,102 @@
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:padding="10dp">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
-        app:layout_constraintEnd_toEndOf="parent"
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/chatProfileImage"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignParentLeft="true"
+        android:layout_margin="2dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="4dp"
+        android:src="@drawable/avatar"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:src="@drawable/avatar"
-            android:layout_margin="2dp"
-            android:layout_alignParentLeft="true"
-            android:id="@+id/chatProfileImage"/>
-        <TextView
-            android:id="@+id/txtReceivedMessage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:maxWidth="300dp"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:paddingBottom="3dp"
-            android:paddingTop="3dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/left_message_bubble"
-            android:fontFamily="sans-serif-condensed"
-            android:textStyle="normal"
-            android:layout_toEndOf="@+id/chatProfileImage"
-            android:textColor="@color/cardview_light_background" />
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:minWidth="2dp"
-            android:maxWidth="300dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/txtsendMessage"
-            android:elevation="5dp"
-            android:background="@drawable/right_message_bubble"
-            android:layout_margin="3dp"
-            android:layout_alignParentRight="true"
-            android:textColor="@android:color/background_dark"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:paddingBottom="3dp"
-            android:paddingTop="3dp"
+    <TextView
+        android:id="@+id/txtReceivedMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_toRightOf="@+id/chatProfileImage"
+        android:background="@drawable/left_message_bubble"
+        android:fontFamily="sans-serif-condensed"
+        android:maxWidth="250dp"
+        android:padding="5dp"
+        android:text=""
+        android:textColor="@color/cardview_light_background"
+        android:textStyle="normal"
+        app:layout_constraintBottom_toTopOf="@+id/txtReceivedMessageTime"
+        app:layout_constraintStart_toEndOf="@+id/chatProfileImage"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.566" />
 
-      />
-    </RelativeLayout>
-</android.support.constraint.ConstraintLayout>
+    <TextView
+        android:id="@+id/txtReceivedMessageTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/txtReceivedMessage"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="16dp"
+        android:text="Act 23 34"
+        android:textSize="12dp"
+        android:textStyle="italic"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/txtsendMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="8dp"
+        android:layout_marginRight="8dp"
+        android:background="@drawable/right_message_bubble"
+        android:elevation="5dp"
+        android:maxWidth="250dp"
+        android:minWidth="2dp"
+        android:padding="5dp"
+        android:text=""
+        android:textColor="@android:color/background_dark"
+        app:layout_constraintBottom_toTopOf="@+id/txtSentMessageTime"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txtSentMessageTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/txtsendMessage"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="8dp"
+        android:layout_marginRight="16dp"
+        android:text="Act 23 34"
+        android:textSize="12sp"
+        android:textStyle="italic"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/txtSentMessageSeen"
+        android:layout_width="46dp"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/txtsendMessage"
+        android:layout_marginBottom="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_toLeftOf="@+id/txtSentMessageTime"
+        android:text="Seen"
+        android:textColor="@color/colorPrimary"
+        android:textSize="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/txtSentMessageTime"
+        app:layout_constraintTop_toBottomOf="@+id/txtsendMessage" />
+    </android.support.constraint.ConstraintLayout>

@@ -2,6 +2,7 @@ package com.toshi.aerke.pigeonfly;
 
 import android.app.ActionBar;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -102,22 +103,23 @@ public class Profile extends AppCompatActivity {
         Bio = (EditText)findViewById(R.id.txtBio);
         save = (Button) findViewById(R.id.btnSave);
         toolbar =(Toolbar)findViewById(R.id.profileToolbar);
+        imageView =  findViewById(R.id.circleImageView);
+        addImage =findViewById(R.id.btnAddImage);
         setSupportActionBar(toolbar);
         android.support.v7.app.ActionBar actionBar = getSupportActionBar();
         actionBar.setHomeButtonEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
          actionBar.setDisplayShowTitleEnabled(false);
-        imageView = (CircleImageView) findViewById(R.id.circleImageView);
-        addImage =(ImageButton)findViewById(R.id.btnAddImage);
+
         progressDialog = new ProgressDialog(this);
     }
 
     private void InitializeFireBaseComponent() {
         databaseReference = FirebaseDatabase.getInstance().getReference().child("User");
-        databaseReference.keepSynced(true);
         storageReference = FirebaseStorage.getInstance().getReference();
         firebaseAuth =FirebaseAuth.getInstance();
         userID = firebaseAuth.getCurrentUser().getUid();
+        databaseReference.child(userID).keepSynced(true);
     }
 
     private void ChooseImage() {
@@ -149,6 +151,8 @@ public class Profile extends AppCompatActivity {
             uploadImage(CompressData);
 
         }
+        imageView.setImageResource(R.drawable.avatar);
+
     }
 
     private  void uploadImage ( byte [] CompressedImage){
@@ -271,8 +275,8 @@ public class Profile extends AppCompatActivity {
            @Override
            public void onComplete(@NonNull Task<Void> task) {
               if(task.isSuccessful()){
-                  Toast.makeText(Profile.this,"Profile saved successfully",Toast.LENGTH_LONG).show();
-                  UserState.getInstance(userID).setUserState(true);
+                  Snackbar.make(imageView.getRootView(),"Profile saved successfully",3000).show();
+                  UserState.getInstance().setUserState(true);
                   startActivity(new Intent(Profile.this,Home.class));
               }else {
                   try {
@@ -290,21 +294,35 @@ public class Profile extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
+        fetchUser();
+    }
+
+    private  void fetchUser(){
         databaseReference.child(userID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-               User user = dataSnapshot.getValue(User.class);
-               if(user!=null){
-                  _fullName =  user.getFullName();
-                   _nickName =user.getNickName();
-                   _bio = user.getBio();
-                   if(dataSnapshot.child("image").exists())
-                   _image = user.getImage();
-                   Log.i("output", "onDataChange: "+_image);
+                if(dataSnapshot.exists()&& dataSnapshot.hasChildren()){
+                    User user = dataSnapshot.getValue(User.class);
+                    if(user!=null){
+                        _fullName =  user.getFullName();
+                        _nickName =user.getNickName();
+                        _bio = user.getBio();
+                        if(dataSnapshot.hasChild("image")){
+                            _image = user.getImage();
+                        }else{
+                            _image = "";
+                        }
 
-               }else{
-                   Snackbar.make(fullName.getRootView(),"User object is empty",Snackbar.LENGTH_LONG).show();
-               }
+                        Log.i("output", "onDataChange: "+_image);
+                        fullName.setText(_fullName);
+                        nickName.setText(_nickName);
+                        Bio.setText(_bio);
+
+                    }else{
+                        Snackbar.make(fullName.getRootView(),"User object is empty",Snackbar.LENGTH_LONG).show();
+                    }
+                }
+
             }
 
             @Override
@@ -313,20 +331,26 @@ public class Profile extends AppCompatActivity {
             }
         });
 
-        fullName.setText(_fullName);
-        nickName.setText(_nickName);
-        Bio.setText(_bio);
-        Picasso.get().load(_image).networkPolicy(NetworkPolicy.OFFLINE).into(imageView
-                ,        new Callback() {
-                    @Override
-                    public void onSuccess() {
 
-                    }
+        if(_image == null || _image.equals("")){
+            imageView.setImageResource(R.drawable.avatar);
+        }else {
+            Picasso.get().load(_image).networkPolicy(NetworkPolicy.OFFLINE)
+                    .into(imageView, new Callback() {
+                        @Override
+                        public void onSuccess() {
 
-                    @Override
-                    public void onError(Exception e) {
-                        Picasso.get().load(_image).placeholder(R.drawable.avatar).into(imageView);
-                    }
-                });
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+
+                                Picasso.get().load(_image).placeholder(R.drawable.avatar).into(imageView);
+
+
+                        }
+
+                    });
+        }
     }
 }

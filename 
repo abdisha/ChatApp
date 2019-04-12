@@ -1,0 +1,68 @@
+new basic functionality added
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# On branch master
+# Your branch is ahead of 'origin/master' by 1 commit.
+#   (use "git push" to publish your local commits)
+#
+# Changes to be committed:
+#	modified:   .idea/assetWizardSettings.xml
+#	modified:   .idea/caches/build_file_checksums.ser
+#	modified:   app/src/main/AndroidManifest.xml
+#	modified:   app/src/main/java/com/toshi/aerke/Utilitis/UserState.java
+#	modified:   app/src/main/java/com/toshi/aerke/model/Message.java
+#	modified:   app/src/main/java/com/toshi/aerke/model/User.java
+#	new file:   app/src/main/java/com/toshi/aerke/pigeonfly/Chat.java
+#	modified:   app/src/main/java/com/toshi/aerke/pigeonfly/ChatFragment.java
+#	deleted:    app/src/main/java/com/toshi/aerke/pigeonfly/ContactFragment.java
+#	modified:   app/src/main/java/com/toshi/aerke/pigeonfly/CreateAcount.java
+#	modified:   app/src/main/java/com/toshi/aerke/pigeonfly/FriendFragment.java
+#	modified:   app/src/main/java/com/toshi/aerke/pigeonfly/Home.java
+#	modified:   app/src/main/java/com/toshi/aerke/pigeonfly/Login.java
+#	new file:   app/src/main/java/com/toshi/aerke/pigeonfly/People.java
+#	modified:   app/src/main/java/com/toshi/aerke/pigeonfly/Profile.java
+#	modified:   app/src/main/java/com/toshi/aerke/pigeonfly/RequestFragment.java
+#	modified:   app/src/main/java/com/toshi/aerke/pigeonfly/SettingFragment.java
+#	new file:   app/src/main/java/com/toshi/aerke/pigeonfly/SignUP.java
+#	new file:   app/src/main/java/com/toshi/aerke/pigeonfly/profileViewer.java
+#	modified:   app/src/main/java/com/toshi/aerke/pigeonfly/splashScreenActivity.java
+#	new file:   app/src/main/java/com/toshi/aerke/viewholder/ChatHolder.java
+#	new file:   app/src/main/java/com/toshi/aerke/viewholder/ChatListViewHolder.java
+#	new file:   app/src/main/java/com/toshi/aerke/viewholder/FriendViewHolder.java
+#	new file:   app/src/main/java/com/toshi/aerke/viewholder/PeopleViewHolder.java
+#	new file:   app/src/main/java/com/toshi/aerke/viewholder/RequestViewHolder.java
+#	new file:   app/src/main/res/drawable/active_user_indector.xml
+#	new file:   app/src/main/res/drawable/chat_background.jpeg
+#	new file:   app/src/main/res/drawable/ic_add_a_photo_black_24dp.xml
+#	new file:   app/src/main/res/drawable/ic_arrow_back_black_24dp.xml
+#	new file:   app/src/main/res/drawable/ic_brightness_1_black_24dp.xml
+#	new file:   app/src/main/res/drawable/ic_camera_alt_black_24dp.xml
+#	new file:   app/src/main/res/drawable/ic_send_black_24dp.xml
+#	new file:   app/src/main/res/drawable/left_message_bubble.xml
+#	new file:   app/src/main/res/drawable/offline_user_indector.xml
+#	new file:   app/src/main/res/drawable/profile_background.jpeg
+#	new file:   app/src/main/res/drawable/right_message_bubble.xml
+#	new file:   app/src/main/res/layout/activity_chat.xml
+#	modified:   app/src/main/res/layout/activity_create_acount.xml
+#	modified:   app/src/main/res/layout/activity_home.xml
+#	modified:   app/src/main/res/layout/activity_login.xml
+#	new file:   app/src/main/res/layout/activity_people.xml
+#	modified:   app/src/main/res/layout/activity_profile.xml
+#	new file:   app/src/main/res/layout/activity_profile_viewer.xml
+#	new file:   app/src/main/res/layout/activity_sign_up.xml
+#	new file:   app/src/main/res/layout/chat_list_layout.xml
+#	new file:   app/src/main/res/layout/chat_room_layout.xml
+#	new file:   app/src/main/res/layout/costome_toolbar_layout.xml
+#	new file:   app/src/main/res/layout/costume_friend_layout.xml
+#	modified:   app/src/main/res/layout/fragment_chat.xml
+#	modified:   app/src/main/res/layout/fragment_friend.xml
+#	renamed:    app/src/main/res/layout/fragment_contact.xml -> app/src/main/res/layout/fragment_request.xml
+#	modified:   app/src/main/res/layout/fragment_setting.xml
+#	new file:   app/src/main/res/layout/people_layout.xml
+#	new file:   app/src/main/res/layout/request_received_layout.xml
+#	modified:   app/src/main/res/menu/menu_items.xml
+#	modified:   app/src/main/res/values/colors.xml
+#	modified:   app/src/main/res/values/strings.xml
+#

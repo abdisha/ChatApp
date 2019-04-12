@@ -2,6 +2,7 @@ package com.toshi.aerke.Utilitis;
 
 import android.app.Application;
 
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
@@ -17,5 +18,12 @@ public class OfflineStorage  extends Application{
         Builder.setIndicatorsEnabled(true);
         Builder.setLoggingEnabled(true);
         Picasso.setSingletonInstance(Builder);
+        UserState.getInstance().setUserState(true);
+    }
+
+    @Override
+    public void onTerminate() {
+        super.onTerminate();
+        UserState.getInstance().setUserState(false);
     }
 }

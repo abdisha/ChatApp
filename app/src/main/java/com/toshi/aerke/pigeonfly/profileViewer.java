@@ -22,6 +22,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 import com.toshi.aerke.model.User;
 
@@ -148,8 +150,8 @@ public class profileViewer extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.hasChild("image")){
                     Image =dataSnapshot.child("image").getValue().toString();
-                    Picasso.get().load(Image).placeholder(R.drawable.avatar).into(imageView);
-
+               }else{
+                    Image = "";
                 }
                 if(dataSnapshot.child("UserState").exists()){
                     lastSeen = dataSnapshot.child("UserState/state").getValue().toString();
@@ -171,7 +173,7 @@ public class profileViewer extends AppCompatActivity {
             }
         });
 
-
+        setImage(Image);
         sendMessage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -186,6 +188,7 @@ public class profileViewer extends AppCompatActivity {
        sendRequest.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View v) {
+               sendRequest.setEnabled(false);
                Log.i("output", "onClick: "+sendRequest.getText().toString());
                if(sendRequest.getText().toString().equals("Send Request")){
                    sendRequest();
@@ -206,9 +209,27 @@ public class profileViewer extends AppCompatActivity {
        });
     }
 
+    private void setImage(String image) {
+        final String _image = image;
+        if(image == null || image.equals("")){
+            imageView.setImageResource(R.drawable.avatar);
+        }else {
+            Picasso.get().load(image).networkPolicy(NetworkPolicy.OFFLINE)
+                    .into(imageView, new Callback() {
+                        @Override
+                        public void onSuccess() {
 
+                        }
 
+                        @Override
+                        public void onError(Exception e) {
 
+                            Picasso.get().load(_image).placeholder(R.drawable.avatar).into(imageView);
+                        }
+
+                    });
+        }
+    }
 
 
     private void UnFriend() {
@@ -230,9 +251,11 @@ public class profileViewer extends AppCompatActivity {
                 }
             }
         });
+        sendRequest.setEnabled(true);
     }
 
     private void AcceptRequest() {
+
         Map friend = new HashMap();
         String key = databaseReference.child("Friends/"+UserID+"/").push().getKey();
        friend.put(UserID+"/"+key+"/"+"UserId",AccountOwnerId);
@@ -253,6 +276,7 @@ public class profileViewer extends AppCompatActivity {
                                                   if(task.isSuccessful()){
                                                       DatabaseReference d2 = databaseReference.child("Request").child(AccountOwnerId).child("SentRequest").orderByChild("receiverId").equalTo(UserID).getRef();
                                                       d2.removeValue().isSuccessful();
+                                                      sendRequest.setText("UnFriend");
                                                   }
                                               }
                                           });
@@ -261,6 +285,7 @@ public class profileViewer extends AppCompatActivity {
                                        }
                                    }
                                });
+        sendRequest.setEnabled(true);
     }
 
     private void CancelRequest() {
@@ -274,16 +299,18 @@ public class profileViewer extends AppCompatActivity {
                          @Override
                          public void onComplete(@NonNull Task<Void> task) {
                              sendRequest.setText("Send Request");
-                             sendRequest.setEnabled(true);
+
                              Snackbar.make(sendMessage.getRootView(),"Request canceled", Snackbar.LENGTH_LONG).show();
                          }
                      });
                  }
              }
          });
+                 sendRequest.setEnabled(true);
     }
 
     private  void sendRequest(){
+
 
         final Map request = new HashMap();
         String key = databaseReference.child("Request").child(UserID+"/SentRequest").push().getKey();
@@ -293,12 +320,12 @@ public class profileViewer extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task task) {
                 if(task.isSuccessful()){
-                    sendRequest.setEnabled(false);
-                    sendRequest.setText("Request Sent");
+                    sendRequest.setText("Send Request");
                     sendRequest.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
                     Snackbar.make(sendRequest.getRootView(),"Request sent",Snackbar.LENGTH_LONG).show();
                 }
             }
         });
+        sendRequest.setEnabled(true);
     }
 }

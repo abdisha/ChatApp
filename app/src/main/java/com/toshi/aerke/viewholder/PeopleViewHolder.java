@@ -31,7 +31,9 @@ public class PeopleViewHolder extends RecyclerView.ViewHolder {
     }
     public void setImage(String Image){
         final String image =Image;
-        if(Image!=null){
+        if(image ==null || image.equals("")){
+            imageView.setImageResource(R.drawable.avatar);
+        }else{
             Picasso.get().load(Image).networkPolicy(NetworkPolicy.OFFLINE)
                     .into(imageView, new Callback() {
                         @Override
@@ -41,11 +43,12 @@ public class PeopleViewHolder extends RecyclerView.ViewHolder {
 
                         @Override
                         public void onError(Exception e) {
-                            Picasso.get().load(image).placeholder(R.drawable.avatar).into(imageView);
 
-                        }
+                            Picasso.get().load(image).placeholder(R.drawable.avatar).into(imageView);
+                            }
+
                     });
-        }
+    }
 
 
     }

@@ -12,15 +12,19 @@
                    android:layout_height="match_parent">
 
                    <TextView
+                       android:id="@+id/emptyExpression"
                        android:layout_width="wrap_content"
                        android:layout_height="wrap_content"
-                       android:id="@+id/emptyExpression"
-                       android:text="Sorry No Friend.."
-                       android:textSize="20dp"
+                       android:layout_alignParentBottom="true"
+                       android:layout_centerHorizontal="true"
                        android:layout_gravity="center"
-                       android:layout_marginBottom="90dp"
                        android:padding="40dp"
-                       android:visibility="gone"/>
+                       android:text="Sorry No Friend"
+                       android:textColor="@color/colorPrimary"
+                       android:textStyle="normal"
+                       android:elevation="3in"
+                       android:visibility="invisible"
+                       android:textSize="20dp" />
 
                    <android.support.v7.widget.RecyclerView
                        android:id="@+id/friendRecycler"
@@ -38,8 +42,8 @@
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
          android:layout_gravity="bottom|right"
-         android:layout_marginBottom="35dp"
-         android:layout_marginRight="25dp"
+         android:layout_marginBottom="20dp"
+         android:layout_marginRight="20dp"
          android:src="@drawable/ic_create_black_24dp"
          android:backgroundTint="@color/colorAccent"
          />

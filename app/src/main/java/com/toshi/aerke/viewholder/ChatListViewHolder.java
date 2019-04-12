@@ -26,6 +26,8 @@ import com.toshi.aerke.model.User;
 import com.toshi.aerke.pigeonfly.Chat;
 import com.toshi.aerke.pigeonfly.R;
 
+import org.xml.sax.Parser;
+
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +38,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class ChatListViewHolder extends RecyclerView.Adapter<ChatListViewHolder.ChatListView>{
 
        List <User> userList;
-    private String fullName,lastSeen;
+    private String fullName,lastSeen,status;
     private String image ="";
     private FirebaseAuth firebaseAuth;
     private Query userFetching = null,FreindMessage = null;
@@ -68,25 +70,27 @@ public class ChatListViewHolder extends RecyclerView.Adapter<ChatListViewHolder.
 
         if(Friend.getUid()!=null){
             Log.i("output", "chatlistViewHolder: UserID  "+Friend.getUid());
-              FreindMessage= databaseReference.child("Message").child(userId).child(Friend.getUid()).limitToFirst(1);
+              FreindMessage= databaseReference.child("Message").child(userId).child(Friend.getUid()).orderByChild("time").limitToFirst(1);
                // Log.i("output", "onBindViewHolder: "+FreindMessage+" /"+Friend.getUid());
                  FreindMessage.keepSynced(true);
 
             if( FreindMessage!=null){
 
-                image= Friend.getImage();
+                image= Friend.getImage() == null ?"": Friend.getImage();
                 fullName =Friend.getFullName();
-                lastSeen =Friend.getState();
+                lastSeen = Friend.getUserState().getDate()==null?"":Friend.getUserState().getDate();
+
+                status = Friend.getUserState().getState()==null?"Offline":Friend.getUserState().getState();
                 holder.setCircleImageView(image);
                 holder.setFullname(fullName);
-                holder.setDate("offline");
+                holder.setDate(lastSeen, status);
                 FreindMessage.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         if(dataSnapshot.exists()){
                             for(DataSnapshot snapshot: dataSnapshot.getChildren()){
                                 holder.setMessage(snapshot.child("message").getValue().toString());
-                                holder.setDate(snapshot.child("time").getValue().toString());
+                                holder.setDate(snapshot.child("time").getValue().toString(),status);
                             }
 
                         }
@@ -104,12 +108,18 @@ public class ChatListViewHolder extends RecyclerView.Adapter<ChatListViewHolder.
                holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String ls = "Offline"; ;
+                    if (userList.get(position).getUserState().getState()!=null)
+                      ls = userList.get(position).getUserState().getState().equals("Online")?"Online":userList.get(position).getUserState().getDate();
+
+                Log.i("output", "userstatus: "+userList.get(position).getUserState().getState());
 
                 Intent chat = new Intent(context.getApplicationContext(),Chat.class);
                 chat.putExtra("userId",userList.get(position).getUid());
                 chat.putExtra("fullName",userList.get(position).getFullName());
-                chat.putExtra("lastSeen","Offline");
-                chat.putExtra("image",userList.get(position).getImage());
+                chat.putExtra("lastSeen",ls);
+                chat.putExtra("image",userList.get(position).getImage() == null
+                ? "": userList.get(position).getImage());
                 context.startActivity(chat);
             }
         });
@@ -135,9 +145,11 @@ public class ChatListViewHolder extends RecyclerView.Adapter<ChatListViewHolder.
 
         }
 
-        public void setCircleImageView(String image) {
+        public void setCircleImageView(final String image) {
             final String Image =image;
-            if(!circleImageView.equals(null)){
+            if (image.equals("")){
+                circleImageView.setImageResource(R.drawable.avatar);
+            }else{
                 Picasso.get().load(image).networkPolicy(NetworkPolicy.OFFLINE)
                         .into(circleImageView, new Callback() {
                             @Override
@@ -147,16 +159,28 @@ public class ChatListViewHolder extends RecyclerView.Adapter<ChatListViewHolder.
 
                             @Override
                             public void onError(Exception e) {
-                                Picasso.get().load(Image).placeholder(R.drawable.avatar).into(circleImageView);
 
-                            }
+                                    Picasso.get().load(Image).placeholder(R.drawable.avatar).into(circleImageView);
+
+                                }
+
+
                         });
-            }
+        }
         }
 
-        public void setDate(String date) {
-            if(!date.equals(null))
-                this.date.setText(date);
+        public void setDate(String date,String online) {
+            if(!(date.equals("")) || online.equals("Online") ){
+                this.date.setTextColor(itemView.getResources().getColor(R.color.colorPrimaryDark));
+                this.date.setText("Online");
+              }else if(!(date.equals(""))){
+                this.date.setText("Last active "+date);
+                this.date.setTextColor(itemView.getResources().getColor(R.color.seconderText));
+            }else{
+                this.date.setTextColor(itemView.getResources().getColor(R.color.seconderText));
+                this.date.setText("Offline");
+
+            }
         }
 
         public void setFullname(String fullname) {

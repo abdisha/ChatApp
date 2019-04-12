@@ -2,6 +2,7 @@ package com.toshi.aerke.viewholder;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -19,22 +20,28 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
+import com.toshi.aerke.model.User;
+import com.toshi.aerke.model.UserState;
 import com.toshi.aerke.pigeonfly.Chat;
 import com.toshi.aerke.pigeonfly.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class FriendViewHolder extends RecyclerView.Adapter<FriendViewHolder.Views>{
-         List<String> userId;
-         DatabaseReference databaseReference;
+         private List<String> userId;
+         private List<User> userList;
+         private UserState state;
+         private DatabaseReference databaseReference;
          Context context;
-    private String fullName,lastSeen,Image,active;
+    private String fullName="",Bio="",Image = "";
 
     public FriendViewHolder(List<String> userId,Context context) {
         this.userId = userId;
         this.context = context;
+        this.userList = new ArrayList<>();
     }
 
     @NonNull
@@ -57,12 +64,22 @@ public class FriendViewHolder extends RecyclerView.Adapter<FriendViewHolder.View
                            @Override
                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                 if(dataSnapshot.exists()){
-                                    Image = dataSnapshot.child("image").getValue().toString();
+                                    Image = dataSnapshot.child("image").getValue() == null? "":dataSnapshot.child("image").getValue().toString();
                                     fullName = dataSnapshot.child("fullName").getValue().toString();
-                                    lastSeen = dataSnapshot.child("UserState/date").getValue().toString();
-                                    active = dataSnapshot.child("UserState/state").getValue().toString();
+                                    Bio = dataSnapshot.child("bio").getValue().toString();
+                                    if (dataSnapshot.child("UserState").hasChildren()){
+
+                                        state = dataSnapshot.child("UserState").getValue(UserState.class);
+                                    }else{
+                                        state = null;
+                                    }
+                                }else{
+
                                 }
-                               holder.setContent(Image,active,fullName,lastSeen);
+
+                                     User user = new User( fullName,  "",  Image,  Bio, UserId,state );
+                                userList.add(user);
+                               holder.setContent(user);
 
                            }
 
@@ -74,13 +91,20 @@ public class FriendViewHolder extends RecyclerView.Adapter<FriendViewHolder.View
                        holder.cardView.setOnClickListener(new View.OnClickListener() {
                            @Override
                            public void onClick(View v) {
-                                    String ownerId = userId.get(position);
-                               Log.i("output", "onClick Friend USer Id: "+ownerId);
+                                String state ="Offline";
+                               if (userList.get(position).getUserState()!=null){
+                                    if (userList.get(position).getUserState().getState().equals("Online")){
+                                        state = "Online";
+                                    }else {
+                                        state = userList.get(position).getUserState().getDate();
+                                    }
+                               }
+                               Log.i("output", "onClick Friend USer Id: "+userList.get(position).getUid());
                                         Intent chat =new Intent(context.getApplicationContext(), Chat.class);
-                                       chat.putExtra("userId",ownerId);
-                                       chat.putExtra("fullName",fullName);
-                                       chat.putExtra("lastSeen",lastSeen);
-                                       chat.putExtra("image",Image);
+                                       chat.putExtra("userId",userList.get(position).getUid());
+                                       chat.putExtra("fullName",userList.get(position).getFullName());
+                                       chat.putExtra("lastSeen",state);
+                                       chat.putExtra("image",userList.get(position).getImage()==null?"":userList.get(position).getImage());
                                         context.startActivity(chat);
 
                            }
@@ -109,10 +133,13 @@ public class FriendViewHolder extends RecyclerView.Adapter<FriendViewHolder.View
             circleImageView =(CircleImageView)itemView.findViewById(R.id.profileImageFriend);
         }
 
-        public void setContent(String Image,String Status,String Name,String LastSeen){
-            if(!Image.equals(null)){
-                final String image = Image;
-                Picasso.get().load(Image).networkPolicy(NetworkPolicy.OFFLINE)
+        public void setContent(User user){
+
+            final String image =user.getImage()==null?"":user.getImage();
+            if (image.equals("")){
+                circleImageView.setImageResource(R.drawable.avatar);
+            }else{
+                Picasso.get().load(image).networkPolicy(NetworkPolicy.OFFLINE)
                         .into(circleImageView, new Callback() {
                             @Override
                             public void onSuccess() {
@@ -121,17 +148,33 @@ public class FriendViewHolder extends RecyclerView.Adapter<FriendViewHolder.View
 
                             @Override
                             public void onError(Exception e) {
-                                Picasso.get().load(image).into(circleImageView);
+
+                                Picasso.get().load(image).placeholder(R.drawable.avatar).into(circleImageView);
 
                             }
+
+
                         });
             }
-            if(!status.equals(null))
-                status.setText(Status);
-            if(!LastSeen.equals(null))
-                lastSeen.setText("Last seen "+LastSeen);
-            if(!Name.equals(null))
-                name.setText(Name);
+            if (user.getUserState()==null){
+                status.setText("Offline");
+                status.setTextColor(itemView.getResources().getColor(R.color.seconderText) );
+
+            }else {
+                if(user.getUserState().getState().equals("Online")){
+                    status.setText("Online");
+                    status.setTextColor(itemView.getResources().getColor(R.color.colorPrimaryDark) );
+                }else{
+                    status.setTextColor(itemView.getResources().getColor(R.color.seconderText) );
+                    status.setText("Last seen "+user.getUserState().getDate());
+                }
+            }
+
+
+            if(!user.getBio().equals(null))
+                lastSeen.setText("Bio, "+user.getBio());
+            if(!user.getFullName().equals(null))
+                name.setText(user.getFullName());
         }
     }
 }

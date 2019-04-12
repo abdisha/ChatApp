@@ -34,6 +34,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 import com.toshi.aerke.model.User;
+import com.toshi.aerke.model.UserState;
 import com.toshi.aerke.viewholder.PeopleAdapter;
 import com.toshi.aerke.viewholder.PeopleViewHolder;
 
@@ -70,17 +71,20 @@ public class People extends AppCompatActivity {
         actionBar.setDisplayShowTitleEnabled(false);
                 // databaseReferenceRequest =FirebaseDatabase.getInstance().getReference();
         currentUserId =FirebaseAuth.getInstance().getCurrentUser().getUid();
+
         peopleAdapter = new PeopleAdapter(userList,this);
        valueEventListener = new ValueEventListener() {
            @Override
            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                if(dataSnapshot.exists() && !dataSnapshot.equals(null)){
                   for(DataSnapshot snapshot: dataSnapshot.getChildren()){
+                       String image =   snapshot.child("image").getValue()== null ? "": snapshot.child("image").getValue().toString();
+
                       User user = new User(snapshot.child("fullName").getValue().toString(),
                               snapshot.child("nickName").getValue().toString(),
-                              snapshot.child("image").getValue().toString(),
+                              image,
                               snapshot.child("bio").getValue().toString(),
-                              snapshot.child("uid").getValue().toString());
+                              snapshot.child("uid").getValue().toString(),null);
                               userList.add(user);
                       Log.i("output", "onDataChange: search people and recycler adapter"+user.getFullName());
                   }
@@ -97,7 +101,7 @@ public class People extends AppCompatActivity {
     }
     private void setFirebaseRecyclerAdapter(){
         Query query;
-
+        userList.clear();
 
             query =FirebaseDatabase.getInstance().getReference("User");
 

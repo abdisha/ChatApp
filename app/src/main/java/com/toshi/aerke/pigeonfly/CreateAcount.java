@@ -41,7 +41,6 @@ public class CreateAcount extends AppCompatActivity {
        private FirebaseAuth firebaseAuth;
        private String userId;
     private String varificationCode;
-    UserState userState;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +54,7 @@ public class CreateAcount extends AppCompatActivity {
                 startActivity(new Intent(CreateAcount.this,Login.class));
             }
         });
+
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -191,13 +191,13 @@ public class CreateAcount extends AppCompatActivity {
 
     }
 
+
+
     @Override
     protected void onStart() {
         super.onStart();
         if(firebaseAuth.getCurrentUser()!=null){
             userId = firebaseAuth.getCurrentUser().getUid();
-            userState = UserState.getInstance(userId);
-            userState.setUserState(true);
             startActivity(new Intent(this,Home.class));
 
         }
@@ -237,7 +237,7 @@ public class CreateAcount extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        finish();
+
     }
 
     private void ResendCode(PhoneAuthProvider.ForceResendingToken reSendToken) {

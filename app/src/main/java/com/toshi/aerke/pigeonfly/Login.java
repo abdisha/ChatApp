@@ -319,7 +319,7 @@ public class Login extends AppCompatActivity implements LoaderCallbacks<Cursor> 
 
         private final String mEmail;
         private final String mPassword;
-        private boolean result =false;
+        private boolean result;
         private String Message ="Error";
         UserLoginTask(String email, String password) {
             mEmail = email;
@@ -329,31 +329,33 @@ public class Login extends AppCompatActivity implements LoaderCallbacks<Cursor> 
         @Override
         protected Boolean doInBackground(Void... params) {
 
-
-                FirebaseAuth.getInstance().signInWithEmailAndPassword(mEmail, mPassword)
-                        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if (task.isSuccessful()) {
-                                    result =true;
-                                }else{
-
-
-                                    try {
-                                        throw  task.getException();
-
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                        Message = e.getMessage();
-                                        result =false;
-                                    }
-                                }
-                            }
-                        });
-
-
-            return result;
+             return login(mEmail,mPassword);
         }
+
+         protected  boolean login(String Email, String Pass){
+             FirebaseAuth.getInstance().signInWithEmailAndPassword(Email, Pass)
+                     .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                         @Override
+                         public void onComplete(@NonNull Task<AuthResult> task) {
+                             if (task.isSuccessful()) {
+                                            result = true;
+                                            Message = "login successfully";
+                             }else{
+
+
+                                 try {
+                                     throw  task.getException();
+
+                                 } catch (Exception e) {
+                                     e.printStackTrace();
+                                     Message = e.getMessage();
+                                     result =false;
+                                 }
+                             }
+                         }
+                     });
+            return  result;
+         }
                 @Override
         protected void onPostExecute(final Boolean success) {
             mAuthTask = null;

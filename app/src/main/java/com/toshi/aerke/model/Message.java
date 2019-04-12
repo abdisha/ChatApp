@@ -6,6 +6,15 @@ public class Message {
     private String time;
     private String type;
     private String from;
+    private String MID;
+
+    public String getMID() {
+        return MID;
+    }
+
+    public void setMID(String MID) {
+        this.MID = MID;
+    }
 
     public String getFrom() {
         return from;

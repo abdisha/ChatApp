@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextClock;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -49,19 +50,21 @@ public class ChatHolder extends RecyclerView.Adapter<ChatHolder.singleChatHolder
         databaseReference.keepSynced(true);
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.chat_room_layout,parent,false);
+        view.findViewById(R.id.txtSentMessageSeen).setVisibility(View.INVISIBLE);
         return new singleChatHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull final singleChatHolder holder, int position) {
 
+
            Message message = messages.get(position);
 
              if(message.getFrom().equals(UserId)){
-                 holder.setSendMessage(message.getMessage());
+                 holder.setSendMessage(message.getMessage(),message.getTime(),message.getSeen());
            }else{
 
-                 holder.setReceivedMessage(message.getMessage());
+                 holder.setReceivedMessage(message.getMessage(),message.getTime(),message.getMID());
 
            }
     }
@@ -73,7 +76,9 @@ public class ChatHolder extends RecyclerView.Adapter<ChatHolder.singleChatHolder
 
     public class singleChatHolder extends RecyclerView.ViewHolder{
         CircleImageView imageView;
-        TextView receivedMessage,sendMessage;
+        TextView receivedMessage,sendMessage,seen,textClockReciever, textClockSender;
+
+
         private String image;
 
         public singleChatHolder(View itemView) {
@@ -84,6 +89,11 @@ public class ChatHolder extends RecyclerView.Adapter<ChatHolder.singleChatHolder
             receivedMessage.setVisibility(View.INVISIBLE);
             sendMessage=(TextView)itemView.findViewById(R.id.txtsendMessage);
             sendMessage.setVisibility(View.INVISIBLE);
+            textClockSender = (TextView)itemView.findViewById(R.id.txtSentMessageTime);
+            textClockSender.setVisibility(View.INVISIBLE);
+            textClockReciever = (TextView)itemView.findViewById(R.id.txtReceivedMessageTime);
+            textClockReciever.setVisibility(View.INVISIBLE);
+            seen =(TextView)itemView.findViewById(R.id.txtSentMessageSeen);
             setImageView();
         }
 
@@ -92,7 +102,7 @@ public class ChatHolder extends RecyclerView.Adapter<ChatHolder.singleChatHolder
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             if(dataSnapshot.hasChild("image"))
-                              image =dataSnapshot.child("image").getValue().toString();
+                              image =dataSnapshot.child("image").getValue() == null ? "": dataSnapshot.child("image").getValue().toString();
                                 Picasso.get().load(dataSnapshot.child("image").getValue().toString()).
                                         networkPolicy(NetworkPolicy.OFFLINE).into(imageView, new Callback() {
                                     @Override
@@ -102,7 +112,12 @@ public class ChatHolder extends RecyclerView.Adapter<ChatHolder.singleChatHolder
 
                                     @Override
                                     public void onError(Exception e) {
-                                        Picasso.get().load(image).placeholder(R.drawable.avatar).into(imageView);
+                                        if (image.equals("")){
+                                            imageView.setImageResource(R.drawable.avatar);
+                                        }else{
+                                            Picasso.get().load(image).placeholder(R.drawable.avatar).into(imageView);
+
+                                        }
                                     }
                                 });
                         }
@@ -113,18 +128,35 @@ public class ChatHolder extends RecyclerView.Adapter<ChatHolder.singleChatHolder
                         }
                     });
                 }
-              public  void setReceivedMessage(String Message){
+              public  void setReceivedMessage(String Message,String Time,String Mid){
                   sendMessage.setVisibility(View.INVISIBLE);
                   receivedMessage.setVisibility(View.VISIBLE);
                   imageView.setVisibility(View.VISIBLE);
                   receivedMessage.setText(Message);
-
+                  textClockReciever.setVisibility(View.VISIBLE);
+                  textClockSender.setVisibility(View.INVISIBLE);
+                  seen.setVisibility(View.INVISIBLE);
+                    textClockReciever.setText(Time);
+                    updateMessageViewStatues(Mid);
               }
-              public void setSendMessage(String Message){
+
+        private void updateMessageViewStatues(String Mid) {
+
+        }
+
+        public void setSendMessage(String Message,String Time,String Seen){
                     sendMessage.setVisibility(View.VISIBLE);
                     sendMessage.setText(Message);
+                    textClockReciever.setVisibility(View.INVISIBLE);
+                    textClockSender.setVisibility(View.VISIBLE);
+                  seen.setVisibility(View.INVISIBLE);
                     imageView.setVisibility(View.INVISIBLE);
+                    textClockSender.setText(Time);
                     receivedMessage.setVisibility(View.INVISIBLE);
+                    if (Seen.equals("true")){
+                        seen.setVisibility(View.VISIBLE);
+
+                    }
               }
     }
 

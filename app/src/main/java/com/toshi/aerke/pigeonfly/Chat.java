@@ -14,6 +14,8 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,8 +36,11 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 import com.toshi.aerke.model.Message;
+import com.toshi.aerke.model.User;
+import com.toshi.aerke.model.UserState;
 import com.toshi.aerke.viewholder.ChatHolder;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -50,7 +55,7 @@ public class Chat extends AppCompatActivity {
      EditText message;
      RecyclerView recyclerView;
      CircleImageView imageView;
-     ImageButton sendButton;
+     ImageButton sendButton,imageButton;
      String image = "empty",userId ,name,_lastseen,CurrentUserId;
      //firebase objects;
     FirebaseAuth firebaseAuth;
@@ -80,6 +85,7 @@ public class Chat extends AppCompatActivity {
         recyclerView = (RecyclerView)findViewById(R.id.chatRecyclerView);
         message =(EditText)findViewById(R.id.edtMessage);
         sendButton =(ImageButton)findViewById(R.id.btnSendMessage);
+        imageButton =(ImageButton)findViewById(R.id.imageButton);
         toolbar = (Toolbar) findViewById(R.id.ChatToolbar);
         setSupportActionBar(toolbar);
         actionBar =getSupportActionBar();
@@ -88,6 +94,7 @@ public class Chat extends AppCompatActivity {
         actionBar.setHomeButtonEnabled(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);
+        recyclerView.setFocusable(true);
         LayoutInflater layoutInflater = (LayoutInflater)this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view =layoutInflater.inflate(R.layout.costome_toolbar_layout,null);
         imageView = (CircleImageView)view.findViewById(R.id.profileImageChat);
@@ -99,18 +106,33 @@ public class Chat extends AppCompatActivity {
           sendButton.setOnClickListener(new View.OnClickListener() {
               @Override
               public void onClick(View v) {
-                  if(!message.getText().toString().isEmpty()&&message.getText().length()>0){
+                  if(!message.getText().toString().isEmpty() && message.getText().length()>0){
                       sendMessage();
-                      Toast.makeText(getApplicationContext(),"message sent",Toast.LENGTH_LONG).show();
+                      message.setText("");
+                      recyclerView.setFocusable(true);
                   }
 
               }
 
           });
-         userId =getIntent().getStringExtra("userId");
-         name =getIntent().getStringExtra("fullName");
-         _lastseen =getIntent().getStringExtra("lastSeen");
-         image = getIntent().getStringExtra("image");
+          message.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+              @Override
+              public void onFocusChange(View v, boolean hasFocus) {
+                  if (hasFocus){
+                      imageButton.setVisibility(View.INVISIBLE);
+                      sendButton.setVisibility(View.VISIBLE);
+                  }else{
+                      imageButton.setVisibility(View.VISIBLE);
+                      sendButton.setVisibility(View.INVISIBLE);
+                  }
+              }
+          });
+             userId =getIntent().getStringExtra("userId");
+            name =getIntent().getStringExtra("fullName");
+            _lastseen =getIntent().getStringExtra("lastSeen");
+             image = getIntent().getStringExtra("image");
+
+
 
          if(!image.equals(null)){
              Picasso.get().load(image).into(imageView);
@@ -123,6 +145,7 @@ public class Chat extends AppCompatActivity {
 
 
     }
+
 
     @Override
     protected void onStart() {
@@ -173,7 +196,7 @@ public class Chat extends AppCompatActivity {
         messegaMap.put("message",message.getText().toString());
         messegaMap.put("seen","false");
         messegaMap.put("type","Text");
-        messegaMap.put("time", Calendar.getInstance().getTime().toString());
+        messegaMap.put("time", new SimpleDateFormat("HH:mm: a").format(Calendar.getInstance().getTime()).toString());
         Map messeRefer = new HashMap();
         messeRefer.put(SenderRer+"/"+ReciverRer+"/"+messegRef,messegaMap);
         messeRefer.put(ReciverRer+"/"+SenderRer+"/"+messegRef,messegaMap);

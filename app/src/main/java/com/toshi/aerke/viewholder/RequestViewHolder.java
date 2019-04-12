@@ -60,8 +60,11 @@ public class RequestViewHolder extends RecyclerView.Adapter<RequestViewHolder.Re
                                @Override
                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                    if(dataSnapshot.exists()){
-                                       holder.setCircleImageView(dataSnapshot.child("image").getValue().toString());
-                                       holder.setDate(dataSnapshot.child("UserState/state").getValue().toString());
+                                       holder.setCircleImageView(dataSnapshot.child("image").getValue() == null ? "":dataSnapshot.child("image").toString());
+                                       if (dataSnapshot.child("UserState").hasChildren()){
+                                           holder.setDate(dataSnapshot.child("UserState/state").getValue().toString());
+                                       }
+                                       holder.setDate("Offline");
                                        holder.setFullname(dataSnapshot.child("fullName").getValue().toString());
 
                                    }
@@ -78,8 +81,9 @@ public class RequestViewHolder extends RecyclerView.Adapter<RequestViewHolder.Re
                        holder.acceptRequest.setOnClickListener(new View.OnClickListener() {
                            @Override
                            public void onClick(View v) {
+
                                final String senderUserId = UserId.get(position);
-                               if (!(_userId.equals(null)) && !(senderUserId.equals(null))) {
+                               if (!(_userId == null) && !(senderUserId==null)) {
                                    String key = FirebaseDatabase.getInstance().getReference().child("Friends").child(_userId+"/"+"UserId").push().getKey();
                                    Map friend = new HashMap();
                                    friend.put(_userId + "/" +key+ "/"+"UserId", senderUserId);
@@ -106,6 +110,9 @@ public class RequestViewHolder extends RecyclerView.Adapter<RequestViewHolder.Re
                                                                }
                                                            }
                                                        });
+
+                                                       holder.acceptRequest.setEnabled(false);
+                                                                    notifyItemRemoved(position);
                                                        Snackbar.make(holder.itemView.getRootView(), "Congrats !, you got friend", Snackbar.LENGTH_LONG).show();
                                                    }
                                                }
@@ -129,7 +136,11 @@ public class RequestViewHolder extends RecyclerView.Adapter<RequestViewHolder.Re
                                                d2.removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
                                                    @Override
                                                    public void onComplete(@NonNull Task<Void> task) {
+
                                                       notifyDataSetChanged();
+                                                      holder.cancelReqeust.setEnabled(false);
+                                                       notifyItemRemoved(position);
+
                                                        Snackbar.make(holder.itemView.getRootView(),"Request canceled", Snackbar.LENGTH_LONG).show();
                                                    }
                                                });
@@ -165,21 +176,24 @@ public class RequestViewHolder extends RecyclerView.Adapter<RequestViewHolder.Re
 
         public void setCircleImageView(String image) {
             final String Image= image;
-            if(!circleImageView.equals(null)){
-                Picasso.get().load(Image).networkPolicy(NetworkPolicy.OFFLINE)
-                        .into(circleImageView, new Callback() {
-                            @Override
-                            public void onSuccess() {
+            if(Image.equals(null) || Image .equals( "")){
+                circleImageView.setImageResource(R.drawable.avatar);
+            }else{
+            Picasso.get().load(Image).networkPolicy(NetworkPolicy.OFFLINE)
+                    .into(circleImageView, new Callback() {
+                        @Override
+                        public void onSuccess() {
 
-                            }
+                        }
 
-                            @Override
-                            public void onError(Exception e) {
+                        @Override
+                        public void onError(Exception e) {
+
                                 Picasso.get().load(Image).placeholder(R.drawable.avatar).into(circleImageView);
-
                             }
-                        });
-            }
+
+                    });
+        }
         }
 
         public void setDate(String date) {
